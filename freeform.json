@@ -1,33 +1,28 @@
 {
-	"output_path": "bassline.mid",
+  "output_path": "freeform.mid",
 
-	"tempo_bpm": 110,
-	"time_signature": { "numerator": 4, "denominator": 4 },
+  "tempo_bpm": 140,
+  "time_signature": { "numerator": 4, "denominator": 4 },
+  "division": 480,
 
-	"division": 480,
+  "key": "E",
+  "scale": "natural_minor",
 
-	"key": "E",
-	"scale": "natural_minor",
+  "length_measures": 16,
+  "harmonic_mode": "freeform",
 
-	"length_measures": 32,
+  "instrument": {
+    "range": ["C3", "C6"],
+    "velocity_range": [70, 110],
+    "note_duration_beats": 1,
 
-	"harmonic_mode": "freeform",
+    "root_probability": 0.2,
+    "chord_tone_probability": 0.0,
+    "passing_probability": 0.8,
 
-	"bass": {
-		"channel": 0,
-		"root_octave": 2,
-
-		"root_probability": 0.7,
-		"fifth_probability": 0.2,
-		"degree_probability": 0.1,
-
-		"degree_pool": ["b7", "4", "2"],
-
-		"fill_chance_per_measure": 0.3,
-		"fill_length_beats": 2,
-		"fill_degrees": ["IV", "V"],
-
-		"velocity_range": [70, 110],
-		"note_duration_beats": 1
-	}
+    "fill_chance_per_measure": 0.15,
+    "fill_length_beats": 2,
+    "fill_degrees": ["II", "III", "IV", "V"]
+  }
 }
+

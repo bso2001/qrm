@@ -1,9 +1,8 @@
 {
-  "output_path": "riff.mid",
+  "output_path": "chordal.mid",
 
-  "tempo_bpm": 150,
-  "time_signature": { "numerator": 4, "denominator": 4 },
-
+  "tempo_bpm": 80,
+  "time_signature": { "numerator": 7, "denominator": 8 },
   "division": 480,
 
   "key": "E",
@@ -14,9 +13,9 @@
 
   "progression": [
     { "measure": 1, "chord": "Em" },
-    { "measure": 3, "chord": "C7" },
-    { "measure": 4, "chord": "Dsus2" },
-    { "measure": 7, "chord": "Bmaj7" }
+    { "measure": 2, "chord": "C7" },
+    { "measure": 3, "chord": "Dsus2" },
+    { "measure": 4, "chord": "Bmaj7" }
   ],
 
   "instrument": {
@@ -24,12 +23,13 @@
     "velocity_range": [70, 110],
     "note_duration_beats": 1,
 
-    "root_probability": 0.6,
-    "chord_tone_probability": 0.3,
-    "passing_probability": 0.1,
+    "root_probability": 0.3,
+    "chord_tone_probability": 0.5,
+    "passing_probability": 0.2,
 
-    "fill_chance_per_measure": 0.25,
+    "fill_chance_per_measure": 0.35,
     "fill_length_beats": 2,
-    "fill_degrees": ["IV", "V"]
+    "fill_degrees": [ "II", "IV", "V", "VI" ]
   }
 }
+
