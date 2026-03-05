@@ -11,7 +11,7 @@
 
 	"length_measures": 32,
 
-	"harmonic_mode": "bass_led",
+	"harmonic_mode": "freeform",
 
 	"bass": {
 		"channel": 0,

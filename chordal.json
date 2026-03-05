@@ -1,0 +1,37 @@
+{
+	"output_path": "bassline.mid",
+
+	"tempo_bpm": 110,
+	"time_signature": { "numerator": 4, "denominator": 4 },
+
+	"division": 480,
+
+	"key": "E",
+	"scale": "natural_minor",
+
+	"length_measures": 32,
+	"harmonic_mode": "chordal",
+
+	"progression": [
+		{ "measure": 1, "chord": "Em" },
+		{ "measure": 3, "chord": "C" },
+		{ "measure": 4, "chord": "D" },
+		{ "measure": 7, "chord": "B7" }
+	],
+
+	"bass": {
+		"channel": 0,
+		"root_octave": 2,
+
+		"root_probability": 0.6,
+		"chord_tone_probability": 0.3,
+		"passing_probability": 0.1,
+
+		"fill_chance_per_measure": 0.25,
+		"fill_length_beats": 2,
+		"fill_degrees": ["IV", "V"],
+
+		"velocity_range": [70, 110],
+		"note_duration_beats": 1
+	}
+}
