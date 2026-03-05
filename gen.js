@@ -5,7 +5,7 @@
 const fs = require("fs");
 
 /* ---------------------------------------------------------
-   VLQ + MIDI writer core 
+   VLQ + MIDI writer core
 --------------------------------------------------------- */
 
 function writeVLQ(value) {
@@ -137,7 +137,7 @@ function writeMidiFromEvents(json, outputPath) {
 }
 
 /* ---------------------------------------------------------
-   Minimal theory helper (extended for chordal mode)
+   Theory helpers
 --------------------------------------------------------- */
 
 const NOTE_BASES = {
@@ -195,41 +195,62 @@ function rootNoteForKey(key, scaleName, octave) {
 }
 
 /* ---------------------------------------------------------
-   NEW: Chord parser
+   FULL UPDATED CHORD PARSER
 --------------------------------------------------------- */
 
 function parseChordSymbol(sym) {
-  // Examples: "Em", "C", "B7", "Dmaj7", "Gm7"
+  // Slash chords
+  let bassOverride = null;
+  if (sym.includes("/")) {
+    const [main, bass] = sym.split("/");
+    sym = main;
+    bassOverride = NOTE_BASES[bass];
+  }
+
+  // Extract root + quality
   const m = sym.match(/^([A-G][b#]?)(.*)$/);
   if (!m) throw new Error("Bad chord: " + sym);
 
   const rootName = m[1];
   const qual = m[2].toLowerCase();
-
   const root = NOTE_BASES[rootName];
 
-  let type = "major";
-  let intervals = [0, 4, 7]; // major triad
+  const intervals = {
+    "":        [0, 4, 7],
+    "m":       [0, 3, 7],
+    "min":     [0, 3, 7],
+    "dim":     [0, 3, 6],
+    "aug":     [0, 4, 8],
 
-  if (qual === "m" || qual === "min") {
-    type = "minor";
-    intervals = [0, 3, 7];
-  } else if (qual === "7") {
-    type = "dominant7";
-    intervals = [0, 4, 7, 10];
-  } else if (qual === "maj7") {
-    type = "maj7";
-    intervals = [0, 4, 7, 11];
-  } else if (qual === "m7" || qual === "min7") {
-    type = "min7";
-    intervals = [0, 3, 7, 10];
-  }
+    "sus2":    [0, 2, 7],
+    "sus4":    [0, 5, 7],
 
-  return { root, type, intervals };
+    "6":       [0, 4, 7, 9],
+    "m6":      [0, 3, 7, 9],
+
+    "7":       [0, 4, 7, 10],
+    "maj7":    [0, 4, 7, 11],
+    "m7":      [0, 3, 7, 10],
+    "min7":    [0, 3, 7, 10],
+
+    "9":       [0, 4, 7, 10, 14],
+    "m9":      [0, 3, 7, 10, 14],
+
+    "11":      [0, 4, 7, 10, 14, 17],
+    "m11":     [0, 3, 7, 10, 14, 17],
+
+    "13":      [0, 4, 7, 10, 14, 17, 21],
+    "m13":     [0, 3, 7, 10, 14, 17, 21]
+  };
+
+  let chosen = intervals[qual];
+  if (!chosen) chosen = intervals[""];
+
+  return { root, intervals: chosen, bassOverride };
 }
 
 /* ---------------------------------------------------------
-   Bassline generator (now with chordal mode)
+   Bassline generator
 --------------------------------------------------------- */
 
 function randomInt(min, max) {
@@ -281,9 +302,6 @@ function generateBassEvents(spec) {
 
   const absEvents = [];
 
-  /* ---------------------------------------------------------
-     Helper: get chord for a given measure (chordal mode)
-  --------------------------------------------------------- */
   function chordAtMeasure(measureIndex) {
     if (!progression || progression.length === 0) return null;
 
@@ -294,38 +312,28 @@ function generateBassEvents(spec) {
     return parseChordSymbol(last.chord);
   }
 
-  /* ---------------------------------------------------------
-     Helper: choose note in chordal mode
-  --------------------------------------------------------- */
   function chooseChordalNote(chord, isFill) {
-    const { root, intervals } = chord;
+    const bassRoot = chord.bassOverride ?? chord.root;
+
+    if (isFill) {
+      const deg = randomChoice(bass.fill_degrees);
+      return degreeToSemitoneOffset(deg, keyRoot, scaleOffsets);
+    }
 
     const r = Math.random();
 
-    if (isFill) {
-      // Fill degrees relative to key, but avoid dissonance
-      const deg = randomChoice(bass.fill_degrees);
-      let sem = degreeToSemitoneOffset(deg, keyRoot, scaleOffsets);
-      return sem;
-    }
-
     if (r < bass.root_probability) {
-      return root;
+      return bassRoot;
     }
 
     if (r < bass.root_probability + bass.chord_tone_probability) {
-      const intv = randomChoice(intervals);
-      return root + intv;
+      const intv = randomChoice(chord.intervals);
+      return bassRoot + intv;
     }
 
-    // passing tone (diatonic)
-    const step = randomChoice([2, -2]);
-    return root + step;
+    return bassRoot + randomChoice([2, -2]);
   }
 
-  /* ---------------------------------------------------------
-     Helper: choose note in freeform mode
-  --------------------------------------------------------- */
   function chooseFreeformNote(isFill) {
     let degreeStr;
 
@@ -344,10 +352,6 @@ function generateBassEvents(spec) {
     return degreeToSemitoneOffset(degreeStr, keyRoot, scaleOffsets);
   }
 
-  /* ---------------------------------------------------------
-     Main generation loop
-  --------------------------------------------------------- */
-
   for (let measure = 0; measure < length_measures; measure++) {
     const measureStartBeat = measure * beatsPerMeasure;
 
@@ -356,7 +360,8 @@ function generateBassEvents(spec) {
       bass.fill_degrees &&
       bass.fill_degrees.length > 0;
 
-    const chord = harmonic_mode === "chordal" ? chordAtMeasure(measure) : null;
+    const chord =
+      harmonic_mode === "chordal" ? chordAtMeasure(measure) : null;
 
     for (let beat = 0; beat < beatsPerMeasure; ) {
       const currentBeat = measureStartBeat + beat;
@@ -372,7 +377,6 @@ function generateBassEvents(spec) {
         semitone = chooseFreeformNote(isFillRegion);
       }
 
-      // Map to MIDI near rootMidi
       let midiNote = semitone + (bass.root_octave + 1) * 12 - keyRoot;
       while (midiNote < rootMidi - 12) midiNote += 12;
       while (midiNote > rootMidi + 12) midiNote -= 12;
@@ -397,12 +401,13 @@ function generateBassEvents(spec) {
         velocity: 64
       });
 
+	  console.log({ measure, beat, semitone, midiNote, chord });
+
       beat += bass.note_duration_beats;
       if (beat >= beatsPerMeasure) break;
     }
   }
 
-  // Sort + delta conversion
   absEvents.sort((a, b) => {
     if (a.time !== b.time) return a.time - b.time;
     return a.type === "note_off" ? -1 : 1;
@@ -439,7 +444,7 @@ function main(jsonPath) {
 if (require.main === module) {
   const jsonPath = process.argv[2];
   if (!jsonPath) {
-    console.error("Usage: node bass_generator.js spec.json");
+    console.error("Usage: node gen.js spec.json");
     process.exit(1);
   }
   main(jsonPath);
