@@ -1,5 +1,5 @@
 {
-  "output_path": "bassline.mid",
+  "output_path": "riff.mid",
 
   "tempo_bpm": 150,
   "time_signature": { "numerator": 4, "denominator": 4 },
@@ -19,9 +19,10 @@
     { "measure": 7, "chord": "Bmaj7" }
   ],
 
-  "bass": {
-    "channel": 0,
-    "root_octave": 2,
+  "instrument": {
+    "range": ["E1", "E3"],
+    "velocity_range": [70, 110],
+    "note_duration_beats": 1,
 
     "root_probability": 0.6,
     "chord_tone_probability": 0.3,
@@ -29,9 +30,6 @@
 
     "fill_chance_per_measure": 0.25,
     "fill_length_beats": 2,
-    "fill_degrees": ["IV", "V"],
-
-    "velocity_range": [70, 110],
-    "note_duration_beats": 1
+    "fill_degrees": ["IV", "V"]
   }
 }
