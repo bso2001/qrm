@@ -258,7 +258,7 @@ function clampToRange( midi, min, max )
 }
 
 //---------------------------------------------------------
-//   Melodic motion engine
+//   Melodic motion engine -- this is nonsense!
 //---------------------------------------------------------
 
 function applyMotion( prev, target )
@@ -387,10 +387,11 @@ function generateEvents( spec )
 	{
 		const ffn = keyRoot + randomChoice( scaleOffsets )
 
-		if ( spec.verbose )
-			console.log( 'random FF note ', ffn, scaleOffsets )
 		return ffn
 	}
+
+	if ( spec.verbose )
+		console.log( 'min/max MIDI =', [minMidi, maxMidi] )
 
 	for ( let measure = 0; measure < length_measures; measure++ )
 	{
@@ -415,12 +416,21 @@ function generateEvents( spec )
 			else
 				semitone = chooseFreeformNote()
 
+			if ( spec.verbose )
+				console.log( 'semitone = ', semitone )
+
 			// if ( spec.verbose )
 				// console.log( 'clamping to ', semitone, minMidi, maxMidi )
 
 			let midiNote = clampToRange( semitone, minMidi, maxMidi )
+			if ( spec.verbose )
+				console.log( 'midiNote 1 = ', midiNote )
 			midiNote = applyMotion( prevMidi, midiNote )
+			if ( spec.verbose )
+				console.log( 'midiNote 2 = ', midiNote )
 			prevMidi = midiNote
+
+			// if note_duration_beats is an array? pick one; weighted; somehow... !!!!
 
 			const startTick = Math.round( currentBeat * ticksPerBeat )
 			const durationTicks = Math.round( instrument.note_duration_beats * ticksPerBeat )

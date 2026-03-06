@@ -1,9 +1,9 @@
 {
-  "verbose" : false,
+  "verbose" : true,
   "output_path": "/Users/bert.olsson/Desktop/freeform.mid",
 
   "tempo_bpm": 140,
-  "time_signature": { "numerator": 4, "denominator": 4 },
+  "time_signature": { "numerator": 4, "denominator": 8 },
   "division": 480,
 
   "key": "E",
