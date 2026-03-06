@@ -9,21 +9,21 @@ const fs = require("fs")
 //   MIDI helpers
 //---------------------------------------------------------
 
-function writeVLQ(value)
+function writeVLQ( value )
 {
 	const bytes = []
 	let buffer = value & 0x7F
 
-	while (value >>= 7)
+	while ( value >>= 7 )
 	{
 		buffer <<= 8
-		buffer |= ((value & 0x7F) | 0x80)
+		buffer |= ( (value & 0x7F) | 0x80 )
 	}
 
-	while (true)
+	while ( true )
 	{
-		bytes.push(buffer & 0xFF)
-		if (buffer & 0x80)
+		bytes.push( buffer & 0xFF )
+		if ( buffer & 0x80 )
 			buffer >>= 8
 		else
 			break
@@ -32,46 +32,46 @@ function writeVLQ(value)
 	return bytes
 }
 
-function encodeEvent(ev)
+function encodeEvent( evt )
 {
 	const out = []
-	out.push(...writeVLQ(ev.delta))
+	out.push( ...writeVLQ(evt.delta) )
 
-	switch (ev.type)
+	switch ( evt.type )
 	{
 		case "note_on":
-			out.push(0x90 | ev.channel, ev.note & 0x7F, ev.velocity & 0x7F)
+			out.push( 0x90 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
 			break
 		case "note_off":
-			out.push(0x80 | ev.channel, ev.note & 0x7F, ev.velocity & 0x7F)
+			out.push( 0x80 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
 			break
 		case "program_change":
-			out.push(0xC0 | ev.channel, ev.program & 0x7F)
+			out.push( 0xC0 | evt.channel, evt.program & 0x7F )
 			break
 		case "meta":
-			out.push(0xFF)
-			if (ev.meta_type === "end_of_track")
-			{
-				out.push(0x2F, 0x00)
-			}
-			else if (ev.meta_type === "tempo")
+			out.push( 0xFF )
+
+			if ( evt.meta_type === "end_of_track" )
+				out.push( 0x2F, 0x00 )
+
+			else if ( evt.meta_type === "tempo" )
 			{
 				out.push(
 					0x51, 0x03,
-					(ev.tempo >> 16) & 0xFF,
-					(ev.tempo >> 8) & 0xFF,
-					ev.tempo & 0xFF
+					(evt.tempo >> 16) & 0xFF,
+					(evt.tempo >> 8) & 0xFF,
+					evt.tempo & 0xFF
 				)
 			}
 
-			else if (ev.meta_type === "time_signature")
+			else if ( evt.meta_type === "time_signature" )
 			{
 				out.push(
 					0x58, 0x04,
-					ev.numerator,
-					Math.log2(ev.denominator),
-					ev.metronome,
-					ev.thirtyseconds
+					evt.numerator,
+					Math.log2(evt.denominator),
+					evt.metronome,
+					evt.thirtyseconds
 				)
 			}
 
@@ -81,31 +81,33 @@ function encodeEvent(ev)
 	return out
 }
 
-function writeMidiFromEvents(json, outputPath)
+function writeMidiFromEvents( json, outputPath )
 {
 	const { format, division, events } = json
 
 	let trackData = []
-	for (const ev of events) trackData.push(...encodeEvent(ev))
+	for ( const evt of events )
+		trackData.push( ...encodeEvent(evt) )
 
-	const hasEOT = events.some(e => e.type === "meta" && e.meta_type === "end_of_track")
-	if (!hasEOT) trackData.push(...writeVLQ(0), 0xFF, 0x2F, 0x00)
+	const hasEOT = events.some( e => e.type === "meta" && e.meta_type === "end_of_track" )
+	if ( !hasEOT )
+		trackData.push( ...writeVLQ(0), 0xFF, 0x2F, 0x00 )
 
-	const header = Buffer.alloc(14)
-	header.write("MThd", 0)
-	header.writeUInt32BE(6, 4)
-	header.writeUInt16BE(format, 8)
-	header.writeUInt16BE(1, 10)
-	header.writeUInt16BE(division, 12)
+	const header = Buffer.alloc( 14 )
+	header.write( "MThd", 0 )
+	header.writeUInt32BE( 6, 4 )
+	header.writeUInt16BE( format, 8 )
+	header.writeUInt16BE( 1, 10 )
+	header.writeUInt16BE( division, 12 )
 
-	const trackHeader = Buffer.alloc(8)
-	trackHeader.write("MTrk", 0)
-	trackHeader.writeUInt32BE(trackData.length, 4)
+	const trackHeader = Buffer.alloc( 8 )
+	trackHeader.write( "MTrk", 0 )
+	trackHeader.writeUInt32BE( trackData.length, 4 )
 
-	const trackBody = Buffer.from(trackData)
+	const trackBody = Buffer.from( trackData )
 
-	const full = Buffer.concat([header, trackHeader, trackBody])
-	fs.writeFileSync(outputPath, full)
+	const full = Buffer.concat( [header, trackHeader, trackBody] )
+	fs.writeFileSync( outputPath, full )
 }
 
 //---------------------------------------------------------
@@ -123,14 +125,14 @@ const NOTE_BASES =
 	B: 11
 }
 
-function parseNoteName(name)
+function parseNoteName( name )
 {
-	const m = name.match(/^([A-G][b#]?)(\d)$/)
+	const m = name.match( /^([A-G][b#]?)(\d)$/ )
 	if (!m)
 		throw new Error( "Bad note name: " + name )
 
-	const pitch = NOTE_BASES[m[1]]
-	const octave = parseInt(m[2], 10)
+	const pitch = NOTE_BASES[ m[1] ]
+	const octave = parseInt( m[2], 10 )
 
 	return pitch + (octave + 1) * 12
 }
@@ -138,49 +140,49 @@ function parseNoteName(name)
 function parseKeyToSemitone(key)
 {
 	const m = key.match(/^([A-G][b#]?)/i)
-	if (!m)
+	if ( !m )
 		throw new Error( "Bad key: " + key )
 
-	return NOTE_BASES[m[1]]
+	return NOTE_BASES[ m[1] ]
 }
 
 const NATURAL_MINOR = [0, 2, 3, 5, 7, 8, 10]
 const MAJOR = [0, 2, 4, 5, 7, 9, 11]
 
-function getScaleOffsets(name)
+function getScaleOffsets( name )
 {
-	if (name === "natural_minor")
+	if ( name === "natural_minor" )
 		return NATURAL_MINOR
-	if (name === "major")
+	if ( name === "major" )
 		return MAJOR
 
 	throw new Error( "Unsupported scale: " + name )
 }
 
-function degreeToSemitoneOffset(degreeStr, keyRoot, scaleOffsets)
+function degreeToSemitoneOffset( degreeStr, keyRoot, scaleOffsets )
 {
 	const romanMap = { I:0, II:1, III:2, IV:3, V:4, VI:5, VII:6 }
 	let accidental = 0
 	let core = degreeStr
 
-	if (degreeStr.startsWith("b"))
+	if ( degreeStr.startsWith("b") )
 	{
 		accidental = -1
-		core = degreeStr.slice(1)
+		core = degreeStr.slice( 1 )
 	}
-	else if (degreeStr.startsWith("#"))
+	else if ( degreeStr.startsWith("#") )
 	{
 		accidental = 1
-		core = degreeStr.slice(1)
+		core = degreeStr.slice( 1 )
 	}
 
-	if (romanMap[core] !== undefined)
+	if ( romanMap[core] !== undefined )
 	{
 		const idx = romanMap[core]
 		return keyRoot + scaleOffsets[idx] + accidental
 	}
 
-	const n = parseInt(core, 10)
+	const n = parseInt( core, 10 )
 	return keyRoot + scaleOffsets[n - 1] + accidental
 }
 
@@ -188,11 +190,11 @@ function degreeToSemitoneOffset(degreeStr, keyRoot, scaleOffsets)
 //   Chord parser
 //---------------------------------------------------------
 
-function parseChordSymbol(sym)
+function parseChordSymbol( sym )
 {
 	let bassOverride = null
 
-	if (sym.includes("/"))
+	if ( sym.includes("/") )
 	{
 		const [main, bass] = sym.split("/")
 		sym = main
@@ -200,13 +202,15 @@ function parseChordSymbol(sym)
 	}
 
 	const m = sym.match(/^([A-G][b#]?)(.*)$/)
-	if (!m) throw new Error("Bad chord: " + sym)
+	if ( !m )
+		throw new Error( "Bad chord: " + sym )
 
 	const rootName = m[1]
 	const qual = m[2].toLowerCase()
 	const root = NOTE_BASES[rootName]
 
-	const intervals = {
+	const intervals =
+	{
 		"": [0, 4, 7],
 		"m": [0, 3, 7],
 		"min": [0, 3, 7],
@@ -241,9 +245,9 @@ function parseChordSymbol(sym)
 
 function clampToRange( midi, min, max )
 {
-	while (midi < min)
+	while ( midi < min )
 		midi += 12
-	while (midi > max)
+	while ( midi > max )
 		midi -= 12
 
 	return midi
@@ -253,37 +257,37 @@ function clampToRange( midi, min, max )
 //   Melodic motion engine
 //---------------------------------------------------------
 
-function applyMotion(prev, target)
+function applyMotion( prev, target )
 {
-	if (prev === null)
+	if ( prev === null )
 		return target
 
 	const diff = target - prev
 
-	if (Math.abs(diff) <= 2)
+	if ( Math.abs(diff) <= 2 )
 		return target
 
-	if (Math.random() < 0.7)
+	if ( Math.random() < 0.7 )
 		return prev + (diff > 0 ? 2 : -2)
 
 	return target
 }
 
 //---------------------------------------------------------
-//   Melody generator
+//   Event generator
 //---------------------------------------------------------
 
-function randomChoice(arr)
+function randomChoice( arr )
 {
 	return arr[ Math.floor( Math.random() * arr.length )]
 }
 
-function randomInRange([lo, hi])
+function randomInRange( [lo, hi] )
 {
 	return Math.floor( Math.random() * (hi - lo + 1) ) + lo
 }
 
-function generateMelodyEvents(spec)
+function generateEvents( spec )
 {
 	const
 	{
@@ -301,14 +305,14 @@ function generateMelodyEvents(spec)
 	const ticksPerBeat = division
 	const beatsPerMeasure = time_signature.numerator
 
-	const keyRoot = parseKeyToSemitone(key)
-	const scaleOffsets = getScaleOffsets(scale)
+	const keyRoot = parseKeyToSemitone( key )
+	const scaleOffsets = getScaleOffsets( scale )
 
-	const minMidi = parseNoteName(instrument.range[0])
-	const maxMidi = parseNoteName(instrument.range[1])
+	const minMidi = parseNoteName( instrument.range[0] )
+	const maxMidi = parseNoteName( instrument.range[1] )
 
 	const events = [];
-	const mpqn = Math.round(60000000 / tempo_bpm)
+	const mpqn = Math.round( 60000000 / tempo_bpm )
 
 	events.push(
 	{
@@ -328,6 +332,7 @@ function generateMelodyEvents(spec)
 		metronome: 24,
 		thirtyseconds: 8
 	})
+
 	events.push(
 	{
 		delta: 0,
@@ -339,45 +344,49 @@ function generateMelodyEvents(spec)
 	const absEvents = []
 	let prevMidi = null
 
-	function chordAtMeasure(measureIndex)
+	function chordAtMeasure( measureIndex )
 	{
 		if ( !progression || progression.length === 0 )
 			return null
 
 		let last = progression[0]
-		for (const p of progression) 
-			if (p.measure - 1 <= measureIndex) last = p
+		for ( const p of progression ) {
+			if ( p.measure - 1 <= measureIndex )
+				last = p
+		}
 
-		return parseChordSymbol(last.chord)
+		return parseChordSymbol( last.chord )
 	}
 
-	function chooseChordalNote(chord, isFill)
+	function chooseChordalNote( chord, isFill )
 	{
 		const root = chord.bassOverride ?? chord.root
 
-		if (isFill)
+		if ( isFill )
 		{
-			const deg = randomChoice(instrument.fill_degrees)
-			return degreeToSemitoneOffset(deg, keyRoot, scaleOffsets)
+			const deg = randomChoice( instrument.fill_degrees )
+			return degreeToSemitoneOffset( deg, keyRoot, scaleOffsets )
 		}
 
 		const r = Math.random()
 
-		if (r < instrument.root_probability)
+		if ( r < instrument.root_probability )
 			return root
 
-		if (r < instrument.root_probability + instrument.chord_tone_probability)
-			return root + randomChoice(chord.intervals)
+		if ( r < instrument.root_probability + instrument.chord_tone_probability )
+			return root + randomChoice( chord.intervals )
 
-		return root + randomChoice([2, -2])
+		return root + randomChoice( [2, -2] )
 	}
 
 	function chooseFreeformNote()
 	{
-		return keyRoot + randomChoice(scaleOffsets)
+		const ffn = keyRoot + randomChoice( scaleOffsets )
+		console.log( 'random FF note ', ffn, scaleOffsets )
+		return ffn
 	}
 
-	for (let measure = 0; measure < length_measures; measure++)
+	for ( let measure = 0; measure < length_measures; measure++ )
 	{
 		const measureStartBeat = measure * beatsPerMeasure
 
@@ -388,26 +397,28 @@ function generateMelodyEvents(spec)
 
 		const chord = harmonic_mode === "chordal" ? chordAtMeasure(measure) : null;
 
-		for (let beat = 0; beat < beatsPerMeasure; )
+		for ( let beat = 0; beat < beatsPerMeasure; )
 		{
-			const currentBeat = measureStartBeat + beat
-
+			const currentBeat  = measureStartBeat + beat
 			const isFillRegion = useFill && (beat >= beatsPerMeasure - instrument.fill_length_beats)
 
 			let semitone
 
-			if (harmonic_mode === "chordal")
-				semitone = chooseChordalNote(chord, isFillRegion)
+			if ( harmonic_mode === "chordal" )
+				semitone = chooseChordalNote( chord, isFillRegion )
 			else
 				semitone = chooseFreeformNote()
 
-			let midiNote = clampToRange(semitone, minMidi, maxMidi)
-			midiNote = applyMotion(prevMidi, midiNote)
+			// if ( spec.verbose )
+				// console.log( 'clamping to ', semitone, minMidi, maxMidi )
+
+			let midiNote = clampToRange( semitone, minMidi, maxMidi )
+			midiNote = applyMotion( prevMidi, midiNote )
 			prevMidi = midiNote
 
-			const startTick = Math.round(currentBeat * ticksPerBeat)
-			const durationTicks = Math.round(instrument.note_duration_beats * ticksPerBeat)
-			const velocity = randomInRange(instrument.velocity_range)
+			const startTick = Math.round( currentBeat * ticksPerBeat )
+			const durationTicks = Math.round( instrument.note_duration_beats * ticksPerBeat )
+			const velocity = randomInRange( instrument.velocity_range )
 
 			absEvents.push(
 			{
@@ -431,14 +442,15 @@ function generateMelodyEvents(spec)
 		}
 	}
 
-	absEvents.sort((a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1))
+	absEvents.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
 
 	let lastTime = 0
 
-	for (const ev of absEvents)
+	for ( const ev of absEvents )
 	{
-		const delta = ev.time - lastTime;
-		lastTime = ev.time;
+		const delta = ev.time - lastTime
+		lastTime = ev.time
+
 		events.push(
 		{
 			delta,
@@ -463,22 +475,22 @@ function generateMelodyEvents(spec)
 //   Entry point
 //---------------------------------------------------------
 
-function main(jsonPath)
+function main( inputFile )
 {
-	const spec = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
-	const midiEventsJson = generateMelodyEvents(spec)
-	writeMidiFromEvents(midiEventsJson, spec.output_path || "output.mid")
+	const spec = JSON.parse( fs.readFileSync(inputFile, "utf8") )
+	const midiEventsJson = generateEvents( spec )
+	writeMidiFromEvents( midiEventsJson, spec.output_path || "output.mid" )
 }
 
-if (require.main === module)
+if ( require.main === module )
 {
-	const jsonPath = process.argv[2]
-	if (!jsonPath)
+	const inputFile = process.argv[2]
+	if ( !inputFile )
 	{
-		console.error("Usage: node gen.js spec.json")
+		console.error( "Usage: node gen.js spec.json" )
 		process.exit(1)
 	}
 
-	main(jsonPath)
+	main( inputFile )
 }
 
