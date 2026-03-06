@@ -2,6 +2,10 @@
 // Generate quasi-random riffage from JSON input description
 // Added freeform vs chordal direction...
 // More harmonic smarts...
+// NOTE: time signature "denominator" will be the quickest note
+// that will be generated. Want eight 8th notes to cover 4 quavers?
+// The time sig should be 4/8; generating a quarter note means
+// specifying an event that lasts 2 "beats" ... I think ....
 
 const fs = require("fs")
 
@@ -146,13 +150,13 @@ function parseKeyToSemitone(key)
 	return NOTE_BASES[ m[1] ]
 }
 
-const NATURAL_MINOR = [0, 2, 3, 5, 7, 8, 10]
-const MAJOR = [0, 2, 4, 5, 7, 9, 11]
+const MINOR = [ 0, 2, 3, 5, 7, 8, 10 ]
+const MAJOR = [ 0, 2, 4, 5, 7, 9, 11 ]
 
 function getScaleOffsets( name )
 {
-	if ( name === "natural_minor" )
-		return NATURAL_MINOR
+	if ( name === "minor" )
+		return MINOR
 	if ( name === "major" )
 		return MAJOR
 
@@ -311,7 +315,7 @@ function generateEvents( spec )
 	const minMidi = parseNoteName( instrument.range[0] )
 	const maxMidi = parseNoteName( instrument.range[1] )
 
-	const events = [];
+	const events = []
 	const mpqn = Math.round( 60000000 / tempo_bpm )
 
 	events.push(
@@ -382,7 +386,9 @@ function generateEvents( spec )
 	function chooseFreeformNote()
 	{
 		const ffn = keyRoot + randomChoice( scaleOffsets )
-		console.log( 'random FF note ', ffn, scaleOffsets )
+
+		if ( spec.verbose )
+			console.log( 'random FF note ', ffn, scaleOffsets )
 		return ffn
 	}
 
@@ -395,7 +401,7 @@ function generateEvents( spec )
 			instrument.fill_degrees &&
 			instrument.fill_degrees.length > 0
 
-		const chord = harmonic_mode === "chordal" ? chordAtMeasure(measure) : null;
+		const chord = harmonic_mode === "chordal" ? chordAtMeasure(measure) : null
 
 		for ( let beat = 0; beat < beatsPerMeasure; )
 		{

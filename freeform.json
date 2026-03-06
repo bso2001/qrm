@@ -1,5 +1,5 @@
 {
-  "verbose" : true,
+  "verbose" : false,
   "output_path": "/Users/bert.olsson/Desktop/freeform.mid",
 
   "tempo_bpm": 140,
@@ -7,7 +7,7 @@
   "division": 480,
 
   "key": "E",
-  "scale": "natural_minor",
+  "scale": "minor",
 
   "length_measures": 16,
   "harmonic_mode": "freeform",
