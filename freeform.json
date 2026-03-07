@@ -1,29 +1,28 @@
 {
-  "verbose" : true,
-  "output_path": "/Users/bert.olsson/Desktop/freeform.mid",
+	"verbose" : false,
+	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
 
-  "tempo_bpm": 140,
-  "time_signature": { "numerator": 4, "denominator": 8 },
-  "division": 480,
+	"tempo": 85,
+	"meter": {
+		"numerator":   4,
+		"denominator": 8
+	},
+	"division": 480,
 
-  "key": "E",
-  "scale": "minor",
+	"key": "A",
+	"scale": "minor",
 
-  "length_measures": 16,
-  "harmonic_mode": "freeform",
+	"nMeasures": 32,
+	"mode": "freeform",
 
-  "instrument": {
-    "range": ["E1", "E3"],
-    "velocity_range": [80, 110],
-    "note_duration_beats": 1,
+	"instrument": {
+		"range": [ "E1", "E3" ],
+		"velocity": [ 80, 110 ],
+		"noteDuration": 1,
 
-    "root_probability": 0.9,
-    "chord_tone_probability": 0.0,
-    "passing_probability": 0.1,
-
-    "fill_chance_per_measure": 0.15,
-    "fill_length_beats": 2,
-    "fill_degrees": ["II", "III", "IV", "V"]
-  }
+		"tonicProbability": 0.6,
+		"fillProbability": 0.15,
+		"fillLength": 2,
+		"fillNotes": [ "II", "III", "V", "VI" ]
+	}
 }
-
