@@ -1,36 +1,33 @@
 
+//---------------------------------------------------------------------------------------
 // Generate quasi-random riffage from JSON input description
-// Added freeform vs chordal direction...
-// More harmonic smarts...
-// NOTE: time signature "denominator" will be the quickest note
-// that will be generated. Want eight 8th notes to cover 4 quavers?
+//
+// NOTE: the denominator of the meter will be the quickest note
+// that will be generated. Want eight quavers to cover 4 quarters?
 // The time sig should be 4/8; to generate a quarter note, specify
 // an event that lasts 2 "beats" ... I think ....
 //
-//
 // About JSON input:
-// 		key is C-B; translated to 0-11 as keyRoot
-// 		if we rest based on restPct, length is noteDuration
-// 		lots of stuff is in a "voice" block; this allows for
-// 		multiple instruments; if we ever get there....
 //
-//		tonicPct currently only applies to choral
-//		we could pick freeforms either from key or "fill notes"
-//			why would we need both?
-//		same on chordal: just pick fill notes from the chord
-//		most places we take a single value? if it's an array?
-//			make a random choice; eg, noteDuration || fillLength
+// • key is C-B; translated to 0-11 as keyRoot
+// • if we rest based on restPct, length is noteDuration
+// • some stuff is in a "voice" block; allows for multiple instruments; if we get there
+// • noteDuration can be an array; add multiple 1's, eg, to emphasize quarters (I think)
+// • most places a single value works? an array will cause a random choice
 //
-//		fill notes are "intervals" ( "II", "III", "V", etc )
-//		fill notes could be optional to add notes "out of key"
-
+// Thought:
+//
+//	We could pick freeforms either from key or "fill notes" why would we need both?
+//	same on chordal: just pick fill notes from the chord
+//	BTW. fill notes are "intervals" ( "II", "III", "V", etc )
+//	And fill notes could be optional to add notes "out of key or chord"
+//---------------------------------------------------------------------------------------
 
 const fs = require("fs")
 
-
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 //   MIDI helpers
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 function writeVLQ( value )
 {
@@ -131,10 +128,9 @@ function writeMidiFromEvents( events, ticks, outputPath )
 	fs.writeFileSync( outputPath, full )
 }
 
-
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 //   Theory helpers
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 const NOTE_BASES =
 {
@@ -213,10 +209,9 @@ function degreeToSemitoneOffset( degreeStr, keyRoot, scaleOffsets )
 	return keyRoot + scaleOffsets[n - 1] + accidental
 }
 
-
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 //   Chord parser
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 function parseChordSymbol( sym )
 {
@@ -267,10 +262,9 @@ function parseChordSymbol( sym )
 	}
 }
 
-
-//---------------------------------------------------------
-//   Event generator
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//   Event generation
+//---------------------------------------------------------------------------------------
 
 function randomChoice( arr )
 {
@@ -285,6 +279,14 @@ function randomInRange( [lo, hi] )
 function probabilityHit( prob )
 {
 	return Math.random() < prob
+}
+
+function parseValue( val )
+{
+	if ( Array.isArray(val) )
+		return randomChoice(val)
+
+	return val
 }
 
 function generateEvents( spec )
@@ -408,9 +410,9 @@ function generateEvents( spec )
 				prevRest = false
 
 				const currentBeat  = measureStartBeat + beat
-				const isFillRegion = useFill && ( beat >= (beatsPerMeasure - spec.voice.fillLength) )	// ???
+				const isFillRegion = useFill && ( beat >= ( beatsPerMeasure - parseValue(spec.voice.fillLength) ))	// ???
 
-				if ( beat != 0 && probabilityHit( spec.voice.tonicOnOne ))
+				if ( beat != 0 && probabilityHit(spec.voice.tonicOnOne) )
 					semitone = keyRoot
 				else {
 					if ( spec.mode === "chordal" )
@@ -424,10 +426,9 @@ function generateEvents( spec )
 				if ( spec.verbose )
 					console.log( ( (semitone < 10) ? 'semitone ' : 'semitone'), semitone, '->', midiNote )
 
-				// if noteDuration is an array? pick one; weighted; somehow... !!!!
 				const startTick = Math.round( currentBeat * spec.ticksPerBeat )
-				const durationTicks = Math.round( spec.voice.noteDuration * spec.ticksPerBeat )
-				const velocity = randomInRange( spec.voice.velocity )
+				const durationTicks = Math.round( parseValue(spec.voice.noteDuration) * spec.ticksPerBeat )
+				const velocity = parseValue( spec.voice.velocity )
 
 				absEvents.push(
 				{
@@ -479,10 +480,9 @@ function generateEvents( spec )
 	return events
 }
 
-
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 //   Entry point
-//---------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 if ( require.main === module )
 {
