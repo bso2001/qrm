@@ -386,7 +386,7 @@ function generateEvents( spec )
 	if ( spec.verbose )
 		console.log( 'min/max MIDI =', [minMidi, maxMidi] )
 
-	for ( let prevRest = false, measure = 0; measure < spec.nMeasures; measure++ )
+	for ( let prevRest = false, prevNote = '', measure = 0; measure < spec.nMeasures; measure++ )
 	{
 		const measureStartBeat = measure * beatsPerMeasure
 
@@ -397,62 +397,75 @@ function generateEvents( spec )
 
 		const chord = spec.mode === "chordal" ? chordAtMeasure(measure) : null
 
-		for ( let semitone, beat = 0; beat < beatsPerMeasure; )
+		if ( spec.verbose )
+			console.log( 'on measure', measure, 'measureStartBeat = ', measureStartBeat )
+
+		for ( let semitone, beat = 0; beat < beatsPerMeasure; beat++ )
 		{
+				if ( spec.verbose )
+					console.log( 'on beat', beat )
+
 									// we currently never rest on beat 0
 			if ( beat != 0 && !prevRest && probabilityHit( spec.voice.restPct )) {
 				prevRest = true
 				if ( spec.verbose )
 					console.log( 'resting on beat', beat )
+				continue;
 			}
-			else
+
+			prevRest = false
+
+			const currentBeat  = measureStartBeat + beat
+			const isFillRegion = useFill && ( beat >= ( beatsPerMeasure - parseValue(spec.voice.fillLength) ))	// ???
+
+			if ( beat != 0 && probabilityHit(spec.voice.tonicOnOne) )
+				semitone = keyRoot
+			else {
+				if ( spec.mode === "chordal" )
+					semitone = chooseChordalNote( chord, isFillRegion )
+				else
+					semitone = chooseFreeformNote()
+			}
+
+			let midiNote = clampToRange( semitone, minMidi, maxMidi )
+
+			if ( spec.verbose )
+				console.log( ( (semitone < 10) ? 'semitone ' : 'semitone'), semitone, '->', midiNote )
+
+			const startTick = Math.round( currentBeat * spec.ticksPerBeat )
+			const durationTicks = Math.round( parseValue(spec.voice.noteDuration) * spec.ticksPerBeat )
+
+			absEvents.push(
 			{
-				prevRest = false
+				time: startTick,		// 10 is a guess on # ticks to move back in time...
+				type: "note_off",
+				channel: 0,
+				note: prevNote,
+				velocity: 0
+			})
 
-				const currentBeat  = measureStartBeat + beat
-				const isFillRegion = useFill && ( beat >= ( beatsPerMeasure - parseValue(spec.voice.fillLength) ))	// ???
-
-				if ( beat != 0 && probabilityHit(spec.voice.tonicOnOne) )
-					semitone = keyRoot
-				else {
-					if ( spec.mode === "chordal" )
-						semitone = chooseChordalNote( chord, isFillRegion )
-					else
-						semitone = chooseFreeformNote()
-				}
-
-				let midiNote = clampToRange( semitone, minMidi, maxMidi )
-
-				if ( spec.verbose )
-					console.log( ( (semitone < 10) ? 'semitone ' : 'semitone'), semitone, '->', midiNote )
-
-				const startTick = Math.round( currentBeat * spec.ticksPerBeat )
-				const durationTicks = Math.round( parseValue(spec.voice.noteDuration) * spec.ticksPerBeat )
-				const velocity = parseValue( spec.voice.velocity )
-
-				absEvents.push(
-				{
-					time: startTick,
-					type: "note_on",
-					channel: 0,
-					note: midiNote,
-					velocity
-				})
-
-				absEvents.push(
-				{
-					time: startTick + durationTicks,
-					type: "note_off",
-					channel: 0,
-					note: midiNote,
-					velocity: 64
-				})
-			}	
-
-			// beat += spec.voice.noteDuration
-			beat += parseValue( spec.voice.noteDuration )
+			absEvents.push(
+			{
+				time: startTick,
+				type: "note_on",
+				channel: 0,
+				note: midiNote,
+				velocity: parseValue( spec.voice.velocity )
+			})
+											// hopefully this note is already off is another started
+			absEvents.push(
+			{
+				time: startTick + durationTicks,
+				type: "note_off",
+				channel: 0,
+				note: (prevNote = midiNote),
+				velocity: 0
+			})
+					// if noteDuration is fractional; not sure what happens
+					// beat += parseValue( spec.voice.noteDuration )
 		}
 	}
+
 
 	absEvents.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
 
