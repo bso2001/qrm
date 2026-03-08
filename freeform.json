@@ -7,7 +7,7 @@
 		"numerator":   4,
 		"denominator": 8
 	},
-	"division": 480,
+	"ticksPerBeat": 480,
 
 	"key": "A",
 	"scale": "minor",

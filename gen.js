@@ -20,7 +20,9 @@
 //		fill notes are "intervals" ( "II", "III", "V", etc )
 //		fill notes could be optional to add notes "out of key"
 
+
 const fs = require("fs")
+
 
 //---------------------------------------------------------
 //   MIDI helpers
@@ -100,7 +102,7 @@ function encodeEvent( evt )
 
 function writeMidiFromEvents( json, outputPath )
 {
-	const { format, division, events } = json
+	const { format, ticksPerBeat, events } = json
 
 	let trackData = []
 	for ( const evt of events )
@@ -115,7 +117,7 @@ function writeMidiFromEvents( json, outputPath )
 	header.writeUInt32BE( 6, 4 )
 	header.writeUInt16BE( format, 8 )
 	header.writeUInt16BE( 1, 10 )
-	header.writeUInt16BE( division, 12 )
+	header.writeUInt16BE( ticksPerBeat, 12 )
 
 	const trackHeader = Buffer.alloc( 8 )
 	trackHeader.write( "MTrk", 0 )
@@ -127,19 +129,25 @@ function writeMidiFromEvents( json, outputPath )
 	fs.writeFileSync( outputPath, full )
 }
 
+
 //---------------------------------------------------------
 //   Theory helpers
 //---------------------------------------------------------
 
 const NOTE_BASES =
 {
-	C: 0, "C#": 1, Db: 1,
-	D: 2, "D#": 3, Eb: 3,
-	E: 4,
-	F: 5, "F#": 6, Gb: 6,
-	G: 7, "G#": 8, Ab: 8,
-	A: 9, "A#": 10, Bb: 10,
-	B: 11
+	"C" : 0,
+	"C#": 1,  "Db": 1,
+	"D" : 2,
+	"D#": 3,  "Eb": 3,
+	"E" : 4,
+	"F" : 5,
+	"F#": 6,  "Gb": 6,
+	"G" : 7,
+	"G#": 8,  "Ab": 8,
+	"A" : 9,
+	"A#": 10, "Bb": 10,
+	"B" : 11
 }
 
 function parseNoteName( name )
@@ -148,7 +156,7 @@ function parseNoteName( name )
 	if (!m)
 		throw new Error( "Bad note name: " + name )
 
-	const pitch = NOTE_BASES[ m[1] ]
+	const pitch = NOTE_BASES[ m[1] ] + 12		// "modern" note numbers?
 	const octave = parseInt( m[2], 10 )
 
 	return pitch + (octave + 1) * 12
@@ -202,6 +210,7 @@ function degreeToSemitoneOffset( degreeStr, keyRoot, scaleOffsets )
 	const n = parseInt( core, 10 )
 	return keyRoot + scaleOffsets[n - 1] + accidental
 }
+
 
 //---------------------------------------------------------
 //   Chord parser
@@ -257,21 +266,7 @@ function parseChordSymbol( sym )
 }
 
 //---------------------------------------------------------
-//   Range clamp
-//---------------------------------------------------------
-
-function clampToRange( midi, min, max )
-{
-	while ( midi < min )
-		midi += 12
-	while ( midi > max )
-		midi -= 12
-
-	return midi
-}
-
-//---------------------------------------------------------
-//   Melodic motion engine -- this is nonsense!
+//   Melodic motion engine this is experimental nonsense!
 //---------------------------------------------------------
 
 function applyMotion( prev, target )
@@ -310,7 +305,7 @@ function generateEvents( spec )
 	{
 		tempo,
 		meter,
-		division,
+		ticksPerBeat,
 		key,
 		scale,
 		nMeasures,
@@ -319,13 +314,14 @@ function generateEvents( spec )
 		instrument
 	} = spec
 
-	const ticksPerBeat = division
-	const beatsPerMeasure = meter.numerator
+	const beatsPerMeasure	= meter.numerator
+	const keyRoot			= parseKeyToSemitone( key )
+	const scaleOffsets		= getScaleOffsets( scale )
 
-	const keyRoot = parseKeyToSemitone( key )
-	console.log('keyRoot = ', keyRoot)
-	const scaleOffsets = getScaleOffsets( scale )
-	console.log('scale = ', scaleOffsets)
+	if ( spec.verbose ) {
+		console.log('keyRoot = ', keyRoot)
+		console.log('scale = ', scaleOffsets)
+	}
 
 	const minMidi = parseNoteName( instrument.range[0] )
 	const maxMidi = parseNoteName( instrument.range[1] )
@@ -333,16 +329,14 @@ function generateEvents( spec )
 	const events = []
 	const mpqn = Math.round( 60000000 / tempo )
 
-	events.push(
-	{
+	events.push({
 		delta: 0,
 		type: "meta",
 		meta_type: "tempo",
 		tempo: mpqn
 	})
 
-	events.push(
-	{
+	events.push({
 		delta: 0,
 		type: "meta",
 		meta_type: "time_signature",
@@ -352,8 +346,7 @@ function generateEvents( spec )
 		thirtyseconds: 8
 	})
 
-	events.push(
-	{
+	events.push({
 		delta: 0,
 		type: "program_change",
 		channel: 0,
@@ -405,6 +398,16 @@ function generateEvents( spec )
 		return ffn
 	}
 
+	function clampToRange( midi, min, max )
+	{
+		while ( midi < min )
+			midi += 12
+		while ( midi > max )
+			midi -= 12
+
+		return midi
+	}
+
 	if ( spec.verbose )
 		console.log( 'min/max MIDI =', [minMidi, maxMidi] )
 
@@ -434,16 +437,18 @@ function generateEvents( spec )
 			if ( spec.verbose )
 				console.log( 'semitone = ', semitone )
 
-			// if ( spec.verbose )
-				// console.log( 'clamping to ', semitone, minMidi, maxMidi )
+			if ( spec.verbose )
+				console.log( 'clamping ', semitone, ' to ', minMidi, maxMidi )
 
 			let midiNote = clampToRange( semitone, minMidi, maxMidi )
 			if ( spec.verbose )
 				console.log( 'midiNote 1 = ', midiNote )
-			midiNote = applyMotion( prevMidi, midiNote )
-			if ( spec.verbose )
-				console.log( 'midiNote 2 = ', midiNote )
-			prevMidi = midiNote
+
+			// midiNote = applyMotion( prevMidi, midiNote )
+			// if ( spec.verbose )
+				// console.log( 'midiNote 2 = ', midiNote )
+				//
+			// prevMidi = midiNote
 
 			// if noteDuration is an array? pick one; weighted; somehow... !!!!
 
@@ -499,7 +504,7 @@ function generateEvents( spec )
 		meta_type: "end_of_track"
 	})
 
-	return { format: 0, division, events }
+	return { format: 0, ticksPerBeat, events }
 }
 
 //---------------------------------------------------------

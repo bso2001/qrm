@@ -7,7 +7,7 @@
 		"denominator": 4
 	},
 	"tempo": 140,
-	"division": 480,
+	"ticksPerBeat": 480,
 
 	"key": "E",
 	"scale": "minor",
