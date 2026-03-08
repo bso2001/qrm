@@ -17,14 +17,14 @@
 
 	"voice": {
 		"range": [ "E1", "E3" ],
-		"velocity": [ 80, 110 ],
-		"noteDuration": 1,
+		"velocity": [ 80, 90 ],
+		"noteDuration": [ ".5", ".5", 1,1,1,1, 2 ],
 
 		"restPct": 0.33,
 		"tonicPct": 0.25,
 		"tonicOnOnePct": 0.9,
 		"fillPct": 0.15,
 		"fillLength": 2,
-		"fillNotes": [ "II", "III", "V", "VI" ]
+		"fillNotes": [ "II", "III", "V" ]
 	}
 }

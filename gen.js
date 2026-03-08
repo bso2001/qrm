@@ -449,7 +449,8 @@ function generateEvents( spec )
 				})
 			}	
 
-			beat += spec.voice.noteDuration
+			// beat += spec.voice.noteDuration
+			beat += parseValue( spec.voice.noteDuration )
 		}
 	}
 
