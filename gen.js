@@ -4,18 +4,23 @@
 // More harmonic smarts...
 // NOTE: time signature "denominator" will be the quickest note
 // that will be generated. Want eight 8th notes to cover 4 quavers?
-// The time sig should be 4/8; generating a quarter note means
-// specifying an event that lasts 2 "beats" ... I think ....
+// The time sig should be 4/8; to generate a quarter note, specify
+// an event that lasts 2 "beats" ... I think ....
 //
 //
 // About JSON input:
 // 		key is C-B; translated to 0-11 as keyRoot
+// 		if we rest based on restProbability, length is noteDuration
+// 		lots of stuff is in a "voice" block; this allows for
+// 		multiple instruments; if we ever get there....
+//
 //		tonicProbability currently only applies to choral
 //		we could pick freeforms either from key or "fill notes"
 //			why would we need both?
 //		same on chordal: just pick fill notes from the chord
 //		most places we take a single value? if it's an array?
 //			make a random choice; eg, noteDuration || fillLength
+//		tonicOnOneProbability? would be High
 //
 //		fill notes are "intervals" ( "II", "III", "V", etc )
 //		fill notes could be optional to add notes "out of key"
@@ -100,10 +105,8 @@ function encodeEvent( evt )
 	return out
 }
 
-function writeMidiFromEvents( json, outputPath )
+function writeMidiFromEvents( events, ticks, outputPath )
 {
-	const { format, ticksPerBeat, events } = json
-
 	let trackData = []
 	for ( const evt of events )
 		trackData.push( ...encodeEvent(evt) )
@@ -115,9 +118,9 @@ function writeMidiFromEvents( json, outputPath )
 	const header = Buffer.alloc( 14 )
 	header.write( "MThd", 0 )
 	header.writeUInt32BE( 6, 4 )
-	header.writeUInt16BE( format, 8 )
+	header.writeUInt16BE( 0, 8 )	// format always 0
 	header.writeUInt16BE( 1, 10 )
-	header.writeUInt16BE( ticksPerBeat, 12 )
+	header.writeUInt16BE( ticks, 12 )
 
 	const trackHeader = Buffer.alloc( 8 )
 	trackHeader.write( "MTrk", 0 )
@@ -265,25 +268,6 @@ function parseChordSymbol( sym )
 	}
 }
 
-//---------------------------------------------------------
-//   Melodic motion engine this is experimental nonsense!
-//---------------------------------------------------------
-
-function applyMotion( prev, target )
-{
-	if ( prev === null )
-		return target
-
-	const diff = target - prev
-
-	if ( Math.abs(diff) <= 2 )
-		return target
-
-	if ( Math.random() < 0.7 )
-		return prev + (diff > 0 ? 2 : -2)
-
-	return target
-}
 
 //---------------------------------------------------------
 //   Event generator
@@ -299,49 +283,36 @@ function randomInRange( [lo, hi] )
 	return Math.floor( Math.random() * (hi - lo + 1) ) + lo
 }
 
+function probabilityHit( prob )
+{
+	return Math.random() < prob
+}
+
 function generateEvents( spec )
 {
-	const
-	{
-		tempo,
-		meter,
-		ticksPerBeat,
-		key,
-		scale,
-		nMeasures,
-		mode,
-		progression,
-		instrument
-	} = spec
+	const beatsPerMeasure	= spec.meter.numerator
+	const keyRoot			= parseKeyToSemitone( spec.key )
+	const scaleOffsets		= getScaleOffsets( spec.scale )
 
-	const beatsPerMeasure	= meter.numerator
-	const keyRoot			= parseKeyToSemitone( key )
-	const scaleOffsets		= getScaleOffsets( scale )
-
-	if ( spec.verbose ) {
-		console.log('keyRoot = ', keyRoot)
-		console.log('scale = ', scaleOffsets)
-	}
-
-	const minMidi = parseNoteName( instrument.range[0] )
-	const maxMidi = parseNoteName( instrument.range[1] )
+	const minMidi = parseNoteName( spec.voice.range[0] )
+	const maxMidi = parseNoteName( spec.voice.range[1] )
 
 	const events = []
-	const mpqn = Math.round( 60000000 / tempo )
+	const absEvents = []
 
 	events.push({
 		delta: 0,
 		type: "meta",
 		meta_type: "tempo",
-		tempo: mpqn
+		tempo: Math.round( 60000000 / spec.tempo )
 	})
 
 	events.push({
 		delta: 0,
 		type: "meta",
 		meta_type: "time_signature",
-		numerator: meter.numerator,
-		denominator: meter.denominator,
+		numerator: spec.meter.numerator,
+		denominator: spec.meter.denominator,
 		metronome: 24,
 		thirtyseconds: 8
 	})
@@ -353,16 +324,18 @@ function generateEvents( spec )
 		program: 32
 	})
 
-	const absEvents = []
-	let prevMidi = null
+	if ( spec.verbose ) {
+		console.log('keyRoot = ', keyRoot)
+		console.log('scale = ', scaleOffsets)
+	}
 
 	function chordAtMeasure( measureIndex )
 	{
-		if ( !progression || progression.length === 0 )
+		if ( !spec.chords || spec.chords.length === 0 )
 			return null
 
-		let last = progression[0]
-		for ( const p of progression ) {
+		let last = spec.chords[0]
+		for ( const p of spec.chords ) {
 			if ( p.measure - 1 <= measureIndex )
 				last = p
 		}
@@ -376,16 +349,14 @@ function generateEvents( spec )
 
 		if ( isFill )
 		{
-			const deg = randomChoice( instrument.fillNotes )
+			const deg = randomChoice( spec.voice.fillNotes )
 			return degreeToSemitoneOffset( deg, keyRoot, scaleOffsets )
 		}
 
-		const r = Math.random()
-
-		if ( r < instrument.tonicProbability )
+		if ( probabilityHit( spec.voice.tonicProbability ))
 			return root
 
-		if ( r < instrument.tonicProbability + instrument.chordToneProbability )
+		if ( probabilityHit( spec.voice.chordToneProbability ))
 			return root + randomChoice( chord.intervals )
 
 		return root + randomChoice( [2, -2] )
@@ -411,70 +382,67 @@ function generateEvents( spec )
 	if ( spec.verbose )
 		console.log( 'min/max MIDI =', [minMidi, maxMidi] )
 
-	for ( let measure = 0; measure < nMeasures; measure++ )
+	for ( let prevRest = false, measure = 0; measure < spec.nMeasures; measure++ )
 	{
 		const measureStartBeat = measure * beatsPerMeasure
 
 		const useFill =
-			Math.random() < instrument.fillProbability &&
-			instrument.fillNotes &&
-			instrument.fillNotes.length > 0
+			probabilityHit( spec.voice.fillProbability ) &&
+			spec.voice.fillNotes &&
+			spec.voice.fillNotes.length > 0
 
-		const chord = mode === "chordal" ? chordAtMeasure(measure) : null
+		const chord = spec.mode === "chordal" ? chordAtMeasure(measure) : null
 
-		for ( let beat = 0; beat < beatsPerMeasure; )
+		for ( let semitone, beat = 0; beat < beatsPerMeasure; )
 		{
-			const currentBeat  = measureStartBeat + beat
-			const isFillRegion = useFill && (beat >= beatsPerMeasure - instrument.fillLength)
-
-			let semitone
-
-			if ( mode === "chordal" )
-				semitone = chooseChordalNote( chord, isFillRegion )
+									// we currently never rest on beat 0
+			if ( beat != 0 && !prevRest && probabilityHit( spec.voice.restProbability )) {
+				if ( spec.verbose )
+					console.log( 'resting on beat', beat )
+				prevRest = true
+			}
 			else
-				semitone = chooseFreeformNote()
-
-			if ( spec.verbose )
-				console.log( 'semitone = ', semitone )
-
-			if ( spec.verbose )
-				console.log( 'clamping ', semitone, ' to ', minMidi, maxMidi )
-
-			let midiNote = clampToRange( semitone, minMidi, maxMidi )
-			if ( spec.verbose )
-				console.log( 'midiNote 1 = ', midiNote )
-
-			// midiNote = applyMotion( prevMidi, midiNote )
-			// if ( spec.verbose )
-				// console.log( 'midiNote 2 = ', midiNote )
-				//
-			// prevMidi = midiNote
-
-			// if noteDuration is an array? pick one; weighted; somehow... !!!!
-
-			const startTick = Math.round( currentBeat * ticksPerBeat )
-			const durationTicks = Math.round( instrument.noteDuration * ticksPerBeat )
-			const velocity = randomInRange( instrument.velocity )
-
-			absEvents.push(
 			{
-				time: startTick,
-				type: "note_on",
-				channel: 0,
-				note: midiNote,
-				velocity
-			})
+				prevRest = false
+				const currentBeat  = measureStartBeat + beat
+				const isFillRegion = useFill && ( beat >= (beatsPerMeasure - spec.voice.fillLength) )	// ???
 
-			absEvents.push(
-			{
-				time: startTick + durationTicks,
-				type: "note_off",
-				channel: 0,
-				note: midiNote,
-				velocity: 64
-			})
+				if ( spec.mode === "chordal" )
+					semitone = chooseChordalNote( chord, isFillRegion )
+				else
+					semitone = chooseFreeformNote()
 
-			beat += instrument.noteDuration
+				let midiNote = clampToRange( semitone, minMidi, maxMidi )
+
+				if ( spec.verbose )
+					console.log( ( (semitone < 10) ? 'semitone ' : 'semitone'), semitone, '->', midiNote )
+
+				// if noteDuration is an array? pick one; weighted; somehow... !!!!
+
+				const startTick = Math.round( currentBeat * spec.ticksPerBeat )
+				const durationTicks = Math.round( spec.voice.noteDuration * spec.ticksPerBeat )
+				const velocity = randomInRange( spec.voice.velocity )
+
+				absEvents.push(
+				{
+					time: startTick,
+					type: "note_on",
+					channel: 0,
+					note: midiNote,
+					velocity
+				})
+
+				absEvents.push(
+				{
+					time: startTick + durationTicks,
+					type: "note_off",
+					channel: 0,
+					note: midiNote,
+					velocity: 64
+				})
+			}	
+
+			beat += spec.voice.noteDuration
 		}
 	}
 
@@ -487,8 +455,7 @@ function generateEvents( spec )
 		const delta = ev.time - lastTime
 		lastTime = ev.time
 
-		events.push(
-		{
+		events.push({
 			delta,
 			type: ev.type,
 			channel: ev.channel,
@@ -497,15 +464,15 @@ function generateEvents( spec )
 		})
 	}
 
-	events.push(
-	{
+	events.push({
 		delta: 0,
 		type: "meta",
 		meta_type: "end_of_track"
 	})
 
-	return { format: 0, ticksPerBeat, events }
+	return events
 }
+
 
 //---------------------------------------------------------
 //   Entry point
@@ -513,9 +480,14 @@ function generateEvents( spec )
 
 function main( inputFile )
 {
-	const spec = JSON.parse( fs.readFileSync(inputFile, "utf8") )
-	const midiEventsJson = generateEvents( spec )
-	writeMidiFromEvents( midiEventsJson, spec.outputPath || "output.mid" )
+	const spec   = JSON.parse( fs.readFileSync(inputFile, "utf8") )
+	const events = generateEvents(spec)
+	const output = spec.outputPath || "output.mid"
+
+	if ( !events || events.length === 0 )
+		throw new Error( "Error: no events generated" )
+
+	writeMidiFromEvents( events, spec.ticksPerBeat, output )
 }
 
 if ( require.main === module )

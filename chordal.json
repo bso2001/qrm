@@ -15,18 +15,19 @@
 	"nMeasures": 16,
 	"mode": "chordal",
 
-	"progression": [
+	"chords": [
 		{ "measure": 1, "chord": "Em" },
 		{ "measure": 2, "chord": "Cmaj7" },
 		{ "measure": 3, "chord": "Bm7" },
 		{ "measure": 4, "chord": "A" }
 	],
 
-	"instrument": {
+	"voice": {
 		"range": [ "E1", "E3" ],
 		"velocity": [ 70, 110 ],
 		"noteDuration": 1,
 
+		"restProbability": 0.6,
 		"tonicProbability": 0.5,
 		"chordToneProbability": 0.3,
 		"fillProbability": 0.15,

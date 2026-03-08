@@ -1,5 +1,5 @@
 {
-	"verbose" : false,
+	"verbose" : true,
 	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
 
 	"tempo": 85,
@@ -15,11 +15,12 @@
 	"nMeasures": 32,
 	"mode": "freeform",
 
-	"instrument": {
+	"voice": {
 		"range": [ "E1", "E3" ],
 		"velocity": [ 80, 110 ],
 		"noteDuration": 1,
 
+		"restProbability": 0.4,
 		"tonicProbability": 0.6,
 		"fillProbability": 0.15,
 		"fillLength": 2,
