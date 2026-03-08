@@ -10,17 +10,16 @@
 //
 // About JSON input:
 // 		key is C-B; translated to 0-11 as keyRoot
-// 		if we rest based on restProbability, length is noteDuration
+// 		if we rest based on restPct, length is noteDuration
 // 		lots of stuff is in a "voice" block; this allows for
 // 		multiple instruments; if we ever get there....
 //
-//		tonicProbability currently only applies to choral
+//		tonicPct currently only applies to choral
 //		we could pick freeforms either from key or "fill notes"
 //			why would we need both?
 //		same on chordal: just pick fill notes from the chord
 //		most places we take a single value? if it's an array?
 //			make a random choice; eg, noteDuration || fillLength
-//		tonicOnOneProbability? would be High
 //
 //		fill notes are "intervals" ( "II", "III", "V", etc )
 //		fill notes could be optional to add notes "out of key"
@@ -353,10 +352,10 @@ function generateEvents( spec )
 			return degreeToSemitoneOffset( deg, keyRoot, scaleOffsets )
 		}
 
-		if ( probabilityHit( spec.voice.tonicProbability ))
+		if ( probabilityHit( spec.voice.tonicPct ))
 			return root
 
-		if ( probabilityHit( spec.voice.chordToneProbability ))
+		if ( probabilityHit( spec.voice.chordTonePct ))
 			return root + randomChoice( chord.intervals )
 
 		return root + randomChoice( [2, -2] )
@@ -364,9 +363,12 @@ function generateEvents( spec )
 
 	function chooseFreeformNote()
 	{
-		const ffn = keyRoot + randomChoice( scaleOffsets )
+		let offset = 0
+		
+		if ( ! probabilityHit( spec.voice.tonicPct ))
+			offset = randomChoice( scaleOffsets )
 
-		return ffn
+		return keyRoot + offset
 	}
 
 	function clampToRange( midi, min, max )
@@ -387,7 +389,7 @@ function generateEvents( spec )
 		const measureStartBeat = measure * beatsPerMeasure
 
 		const useFill =
-			probabilityHit( spec.voice.fillProbability ) &&
+			probabilityHit( spec.voice.fillPct ) &&
 			spec.voice.fillNotes &&
 			spec.voice.fillNotes.length > 0
 
@@ -396,21 +398,26 @@ function generateEvents( spec )
 		for ( let semitone, beat = 0; beat < beatsPerMeasure; )
 		{
 									// we currently never rest on beat 0
-			if ( beat != 0 && !prevRest && probabilityHit( spec.voice.restProbability )) {
+			if ( beat != 0 && !prevRest && probabilityHit( spec.voice.restPct )) {
+				prevRest = true
 				if ( spec.verbose )
 					console.log( 'resting on beat', beat )
-				prevRest = true
 			}
 			else
 			{
 				prevRest = false
+
 				const currentBeat  = measureStartBeat + beat
 				const isFillRegion = useFill && ( beat >= (beatsPerMeasure - spec.voice.fillLength) )	// ???
 
-				if ( spec.mode === "chordal" )
-					semitone = chooseChordalNote( chord, isFillRegion )
-				else
-					semitone = chooseFreeformNote()
+				if ( beat != 0 && probabilityHit( spec.voice.tonicOnOne ))
+					semitone = keyRoot
+				else {
+					if ( spec.mode === "chordal" )
+						semitone = chooseChordalNote( chord, isFillRegion )
+					else
+						semitone = chooseFreeformNote()
+				}
 
 				let midiNote = clampToRange( semitone, minMidi, maxMidi )
 
@@ -418,7 +425,6 @@ function generateEvents( spec )
 					console.log( ( (semitone < 10) ? 'semitone ' : 'semitone'), semitone, '->', midiNote )
 
 				// if noteDuration is an array? pick one; weighted; somehow... !!!!
-
 				const startTick = Math.round( currentBeat * spec.ticksPerBeat )
 				const durationTicks = Math.round( spec.voice.noteDuration * spec.ticksPerBeat )
 				const velocity = randomInRange( spec.voice.velocity )
@@ -478,18 +484,6 @@ function generateEvents( spec )
 //   Entry point
 //---------------------------------------------------------
 
-function main( inputFile )
-{
-	const spec   = JSON.parse( fs.readFileSync(inputFile, "utf8") )
-	const events = generateEvents(spec)
-	const output = spec.outputPath || "output.mid"
-
-	if ( !events || events.length === 0 )
-		throw new Error( "Error: no events generated" )
-
-	writeMidiFromEvents( events, spec.ticksPerBeat, output )
-}
-
 if ( require.main === module )
 {
 	const inputFile = process.argv[2]
@@ -499,6 +493,12 @@ if ( require.main === module )
 		process.exit(1)
 	}
 
-	main( inputFile )
+	const spec = JSON.parse( fs.readFileSync( inputFile, "utf8" ))
+	const evts = generateEvents( spec )
+
+	if ( ! evts || evts.length === 0 )
+		throw new Error( "Error: no events generated" )
+
+	writeMidiFromEvents( evts, spec.ticksPerBeat, spec.outputPath || "output.mid" )
 }
 

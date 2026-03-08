@@ -27,10 +27,11 @@
 		"velocity": [ 70, 110 ],
 		"noteDuration": 1,
 
-		"restProbability": 0.6,
-		"tonicProbability": 0.5,
-		"chordToneProbability": 0.3,
-		"fillProbability": 0.15,
+		"restPct": 0.6,
+		"tonicPct": 0.5,
+		"tonicOnOnePct": 0.5,
+		"chordTonePct": 0.3,
+		"fillPct": 0.15,
 		"fillLength": 2,
 		"fillNotes": [ "II", "V", "VI" ]
 	}
