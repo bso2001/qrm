@@ -436,8 +436,8 @@ function generateEvents( spec )
 			const durationTicks = Math.round( parseValue(spec.voice.noteDuration) * spec.ticksPerBeat )
 
 			absEvents.push(
-			{
-				time: startTick,		// 10 is a guess on # ticks to move back in time...
+			{							// ensure the prev note is stopped
+				time: startTick,		// don't start earlier than `startTick` or bad stuff happens
 				type: "note_off",
 				channel: 0,
 				note: prevNote,
@@ -465,7 +465,6 @@ function generateEvents( spec )
 					// beat += parseValue( spec.voice.noteDuration )
 		}
 	}
-
 
 	absEvents.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
 
