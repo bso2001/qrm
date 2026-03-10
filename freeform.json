@@ -5,7 +5,7 @@
 	"tempo": 85,
 	"meter": {
 		"numerator":   4,
-		"denominator": 8
+		"denominator": 4
 	},
 	"ticksPerBeat": 480,
 
