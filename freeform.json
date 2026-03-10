@@ -25,7 +25,7 @@
 		"tonicOnOnePct": 0.9,
 
 		"fillPct": 0.15,
-		"fillLength": 2,
+		"fillLength": [ 2, 3 ],
 		"fillNotes": [ "II", "III", "V" ]
 	}
 }
