@@ -7,7 +7,7 @@
 		"denominator": 4
 	},
 	"tempo": 140,
-	"ticksPerBeat": 480,
+	"ppqn": 480,
 
 	"key": "E",
 	"scale": "minor",
@@ -26,8 +26,10 @@
 		"range": [ "E1", "E3" ],
 		"velocity": [ 70, 110 ],
 		"noteDuration": 1,
+		"fastestNote": "1/8",
 
 		"restPct": 0.6,
+		"restOnOnePct": 0,
 		"tonicPct": 0.5,
 		"tonicOnOnePct": 0.5,
 		"chordTonePct": 0.3,

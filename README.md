@@ -6,12 +6,14 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 ### JSON Input Description
 
-* The denominator of *meter* will be the quickest note that can be generated. Want eight quavers to cover 4 quarters? *Meter* should be 4/8; to generate a quarter note, specify an event that lasts 2 "beats" —— UPDATE: this works, sorta, but not really; a better way is imminent...
-* *key* is C-B; translated to 0-11 as keyRoot
-* If we do rest based on *restPct*, the rest length is *noteDuration*
-* Some stuff is in a *voice* block; allows for multiple instruments; if we get there
-* *noteDuration* can be an array; add multiple 1's, eg, to emphasize quarters (I think)
-* Most places a single value works? an array will cause a random choice
+* _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the JSON spec).
+* We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
+* _fastestNote_ is the quickest we'll generate; must be one of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. Meaning a melody consisting of any "plain" note from Whole to Sixty-Fourth can be specified.
+* If we do rest based on _restPct_, the rest length is _noteDuration_.
+* _restFirstBeat_ controls whether a rest on beat 0 is allowed.
+* Some stuff is in a _voice_ block; allows for multiple instruments; if we get there.
+* _noteDuration_ can be an array; add multiple 1's, eg, to emphasize quarters (I think).
+* Most places a single value works? an array will cause a random choice.
 
 ### MIDI Timing [by Duck.Ai]
 

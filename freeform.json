@@ -1,5 +1,5 @@
 {
-	"verbose" : false,
+	"verbose" : true,
 	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
 
 	"tempo": 85,
@@ -7,7 +7,7 @@
 		"numerator":   4,
 		"denominator": 4
 	},
-	"ticksPerBeat": 480,
+	"ppqn": 480,
 
 	"key": "A",
 	"scale": "minor",
@@ -18,11 +18,13 @@
 	"voice": {
 		"range": [ "E1", "E3" ],
 		"velocity": [ 80, 90 ],
-		"noteDuration": [ ".5",".5", 1,1,1, 2,2 ],
+		"noteDuration": [ 0.5,0.5, 1,1,1, 2,2 ],
+		"fastestNote": "1/32",
 
-		"restPct": 0.33,
-		"tonicPct": 0.25,
-		"tonicOnOnePct": 0.9,
+		"restPct": 0.4,
+		"restOnOnePct": 0.1,
+		"tonicPct": 0.15,
+		"tonicOnOnePct": 0.8,
 
 		"fillPct": 0.15,
 		"fillLength": [ 2, 3 ],
