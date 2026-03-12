@@ -1,5 +1,5 @@
 
-function _noteOff( tick, note )
+function noteOff( tick, note )
 {
 	return {
 		time: tick,
@@ -10,7 +10,7 @@ function _noteOff( tick, note )
 	}
 }
 
-function _noteOn( tick, note, vel )
+function noteOn( tick, note, vel )
 {
 	return {
 		time: tick,
@@ -44,5 +44,9 @@ function randomInRange( [lo, hi] )
 	return Math.floor( Math.random() * (hi - lo + 1) ) + lo
 }
 
-module.exports = { _noteOff, _noteOn, parseValue, probabilityHit, randomChoice, randomInRange }
+const PAD2 = '  '
+const PAD4 = (PAD2 + PAD2)
+const PAD8 = (PAD4 + PAD4)
+
+module.exports = { noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8 }
 

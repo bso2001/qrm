@@ -71,6 +71,7 @@ function generate( spec )
 
 	spec.intervals = theory.scaleIntervals( spec.scale )
 	spec.keyRoot   = theory.keyToSemitone( spec.key )
+	spec.quikDivsr = theory.parseDuration( spec.voice.fastestNote )
 
 	events.push({
 		delta: 0,
@@ -97,6 +98,7 @@ function generate( spec )
 	})
 
 	if ( spec.verbose ) {
+		console.log( '-------------------------------------------------------' )
 		console.log( 'min/max MIDI   =', [minMidi, maxMidi] )
 		console.log( 'spec.keyRoot   = ', spec.keyRoot)
 		console.log( 'spec.intervals = ', spec.intervals)
@@ -116,7 +118,7 @@ function generate( spec )
 			spec.voice.fillNotes && spec.voice.fillNotes.length > 0
 
 		if ( spec.verbose ) {
-			console.log( '-------------------------------------------------' )
+			console.log( '-------------------------------------------------------' )
 			console.log( 'We are on Measure #', measure,
 						 '; measureStartBeat =', measureStartBeat,
 						 useFill ? '; fill' : '' )
@@ -125,7 +127,7 @@ function generate( spec )
 		for ( let semitone, beat = 0; beat < bpMeasure; beat++ )
 		{
 				if ( spec.verbose )
-					console.log( '    Beat', beat )
+					console.log( library.PAD4, 'Beat', beat )
 
 							// see if we're taking a breather; we don't rest twice in a row
 							// also: resting on first beat is a spec pct that must be checked
@@ -138,7 +140,7 @@ function generate( spec )
 			if ( resting ) {
 				prevRest = true
 				if ( spec.verbose )
-					console.log( '        resting on beat', beat )
+					console.log( library.PAD8, 'resting on beat', beat )
 				continue			// here we rely on beat being incremented by the loop!
 			}
 
@@ -170,13 +172,13 @@ function generate( spec )
 			const velocity  = library.parseValue( spec.voice.velocity )
 
 			if ( spec.verbose ) {
-				console.log( '        semitone', semitone, '-->', midiNote )
-				console.log( '        ticks', currentTick, 'thru', endTick )
+				console.log( library.PAD8, 'semitone', semitone, '-->', midiNote )
+				console.log( library.PAD8, 'ticks', currentTick, 'thru', endTick )
 			}
 																				// ensure prev note stops; don't go earlier
-			absEvents.push( library._noteOff( currentTick, prevNote ))			// than `currentTick` or bad stuff happens
-			absEvents.push( library._noteOn( currentTick, midiNote, velocity ))
-			absEvents.push( library._noteOff( endTick,  midiNote ))				// hopefully this note is already off
+			absEvents.push( library.noteOff( currentTick, prevNote ))			// than `currentTick` or bad stuff happens
+			absEvents.push( library.noteOn( currentTick, midiNote, velocity ))
+			absEvents.push( library.noteOff( endTick,  midiNote ))				// hopefully this note is already off
 
 			prevNote = midiNote
 		}
@@ -223,9 +225,9 @@ function genEvent( currentTick )
 		console.log( '        ticks', currentTick, 'thru', endTick )
 	}
 																		// ensure prev note stops; don't go earlier
-	absEvents.push( library._noteOff( currentTick, prevNote ))			// than `currentTick` or bad stuff happens
-	absEvents.push( library._noteOn( currentTick, midiNote, velocity ))
-	absEvents.push( library._noteOff( endTick,  midiNote ))				// hopefully this note is already off
+	absEvents.push( library.noteOff( currentTick, prevNote ))			// than `currentTick` or bad stuff happens
+	absEvents.push( library.noteOn( currentTick, midiNote, velocity ))
+	absEvents.push( library.noteOff( endTick,  midiNote ))				// hopefully this note is already off
 }
 
 module.exports = { generate }
