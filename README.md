@@ -8,16 +8,16 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 * _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the JSON spec).
 * We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
-* _fastestNote_ is the quickest we'll generate; must be one of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. Meaning a melody consisting of any "plain" note from Whole to Sixty-Fourth can be specified.
+* _fastestNote_ is the quickest we'll generate; it must be one of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. [Its denonator 
 * If we do rest based on _restPct_, the rest length is _noteDuration_.
 * _restFirstBeat_ controls whether a rest on beat 0 is allowed.
 * Some stuff is in a _voice_ block; allows for multiple instruments; if we get there.
 * _noteDuration_ can be an array; add multiple 1's, eg, to emphasize quarters (I think).
 * Most places a single value works? an array will cause a random choice.
 
-### MIDI Timing [by Duck.Ai]
+### MIDI Timing
 
-MIDI specifications typically use a default of 480 ticks per quarter note, which means there are 480 ticks for each beat in a 4/4 time signature. However, this can vary depending on the specific MIDI device or software being used.
+MIDI specifications typically use a default of 480 ticks per quarter note, which means there are 480 ticks for each beat in _4/4_ time. However, this can vary depending on the specific MIDI device or software being used. Again, we use 480, which should work forever.
 
 #### Understanding Ticks
 
@@ -26,7 +26,7 @@ MIDI specifications typically use a default of 480 ticks per quarter note, which
 
 #### Common MIDI Resolutions
 
-| PPQN | Ticks / beat | x4 = ticks per 4/4|
+| PPQN | Ticks / beat | x4 = ticks per 4/4 |
 |:----|:----|:-----|
 |  24 |  24 |   96 |
 |  48 |  48 |  192 |
@@ -38,7 +38,46 @@ MIDI specifications typically use a default of 480 ticks per quarter note, which
 #### Default Values
 
 * The default MIDI tempo is typically set at 120 beats per minute (BPM).
-* The default ticks per quarter note is normally 480.
+* The default ticks per quarter note is normally 480. The charts below assume 480 ppqn.
+
+
+#### Ticks per Notes
+
+##### Straight Notes
+
+| Note  | Ticks |
+|:------|:------|
+| Whole | 1920 |
+| Half | 960 |
+| Quarter | 480 |
+| 8th | 240 |
+| 16th | 120 |
+| 32nd | 60 |
+| 64th | 30 |
+| 128th | 15 |
+
+##### Dotted Notes [_multiply straight value by 1.5_]
+
+| Note  | Ticks |
+|:------|:------|
+| Dot Half | 1440 |
+| Dot Quarter | 720 |
+| Dot 8th | 360 |
+| Dot 16th | 180 |
+| Dot 32nd | 90 |
+| Dot 64th | 45 |
+
+##### Triplet Notes [_multiply by .66 and round up_]
+
+| Note  | Ticks |
+|:------|:------|
+| Half Trip | 640 |
+| Quarter Trip | 320 |
+| 8th Trip | 160 |
+| 16th Trip | 80 |
+| 32nd Trip | 40 |
+| 64th Trip | 20 |
+
 
 ### Thoughts
 

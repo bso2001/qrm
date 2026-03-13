@@ -22,19 +22,17 @@
 		{ "measure": 4, "chord": "A" }
 	],
 
-	"voice": {
-		"range": [ "E1", "E3" ],
-		"velocity": [ 70, 110 ],
-		"noteDuration": 1,
-		"fastestNote": "1/8",
+	"range": [ "E1", "E3" ],
+	"velocity": [ 70, 110 ],
+	"noteDuration": 1,
+	"fastestNote": "1/8",
 
-		"restPct": 0.6,
-		"restOnOnePct": 0,
-		"tonicPct": 0.5,
-		"tonicOnOnePct": 0.5,
-		"chordTonePct": 0.3,
-		"fillPct": 0.15,
-		"fillLength": 2,
-		"fillNotes": [ "II", "V", "VI" ]
-	}
+	"restPct": 0.6,
+	"restOnOnePct": 0,
+	"tonicPct": 0.5,
+	"tonicOnOnePct": 0.5,
+	"chordTonePct": 0.3,
+	"fillPct": 0.15,
+	"fillLength": 2,
+	"fillNotes": [ "II", "V", "VI" ]
 }

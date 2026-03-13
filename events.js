@@ -26,14 +26,14 @@ function _chordalNote( spec, chord, isFill )
 
 	if ( isFill )
 	{
-		const deg = library.randomChoice( spec.voice.fillNotes )
+		const deg = library.randomChoice( spec.fillNotes )
 		return theory.degreeToSemitone( deg, spec.keyRoot, spec.intervals )
 	}
 
-	if ( library.probabilityHit( spec.voice.tonicPct ))
+	if ( library.probabilityHit( spec.tonicPct ))
 		return root
 
-	if ( library.probabilityHit( spec.voice.chordTonePct ))
+	if ( library.probabilityHit( spec.chordTonePct ))
 		return root + library.randomChoice( chord.notes )
 
 	return root + library.randomChoice( [2, -2] )
@@ -43,7 +43,7 @@ function _freeformNote( spec )
 {
 	let offset = 0
 	
-	if ( ! library.probabilityHit( spec.voice.tonicPct ))
+	if ( ! library.probabilityHit( spec.tonicPct ))
 		offset = library.randomChoice( spec.intervals )
 
 	return spec.keyRoot + offset
@@ -65,13 +65,13 @@ function generate( spec )
 	const events    = []
 	const absEvents = []
 
-	const minMidi   = theory.parseNoteName( spec.voice.range[0] )
-	const maxMidi   = theory.parseNoteName( spec.voice.range[1] )
+	const minMidi   = theory.parseNoteName( spec.range[0] )
+	const maxMidi   = theory.parseNoteName( spec.range[1] )
 	const bpMeasure = spec.meter.numerator
 
 	spec.intervals = theory.scaleIntervals( spec.scale )
 	spec.keyRoot   = theory.keyToSemitone( spec.key )
-	spec.quikDivsr = theory.parseDuration( spec.voice.fastestNote )
+	spec.quikDivsr = theory.parseDuration( spec.fastestNote )
 
 	events.push({
 		delta: 0,
@@ -114,8 +114,8 @@ function generate( spec )
 		const measureStartBeat = measure * bpMeasure
 
 		const useFill =
-			library.probabilityHit( spec.voice.fillPct ) &&
-			spec.voice.fillNotes && spec.voice.fillNotes.length > 0
+			library.probabilityHit( spec.fillPct ) &&
+			spec.fillNotes && spec.fillNotes.length > 0
 
 		if ( spec.verbose ) {
 			console.log( '-------------------------------------------------------' )
@@ -132,9 +132,9 @@ function generate( spec )
 							// see if we're taking a breather; we don't rest twice in a row
 							// also: resting on first beat is a spec pct that must be checked
 
-			let resting = !prevRest && library.probabilityHit( spec.voice.restPct )
+			let resting = !prevRest && library.probabilityHit( spec.restPct )
 
-			if ( resting && beat == 0 && !library.probabilityHit( spec.voice.restOnOnePct ))
+			if ( resting && beat == 0 && !library.probabilityHit( spec.restOnOnePct ))
 				resting = false
 
 			if ( resting ) {
@@ -156,9 +156,9 @@ function generate( spec )
 			// genEvent is kinda below....
 
 
-			const isFillRegion = useFill && ( beat >= ( bpMeasure - library.parseValue(spec.voice.fillLength) ))
+			const isFillRegion = useFill && ( beat >= ( bpMeasure - library.parseValue(spec.fillLength) ))
 
-			if ( beat != 0 && library.probabilityHit(spec.voice.tonicOnOnePct) )
+			if ( beat != 0 && library.probabilityHit(spec.tonicOnOnePct) )
 				semitone = spec.keyRoot
 			else {
 				if ( spec.mode === "chordal" )
@@ -168,8 +168,8 @@ function generate( spec )
 			}
 
 			let   midiNote  = _clampToRange( semitone, minMidi, maxMidi )
-			const duration  = Math.round( library.parseValue(spec.voice.noteDuration) * spec.ppqn )
-			const velocity  = library.parseValue( spec.voice.velocity )
+			const duration  = Math.round( library.parseValue(spec.noteDuration) * spec.ppqn )
+			const velocity  = library.parseValue( spec.velocity )
 
 			if ( spec.verbose ) {
 				console.log( library.PAD8, 'semitone', semitone, '-->', midiNote )
@@ -205,9 +205,9 @@ function generate( spec )
 
 function genEvent( currentTick ) 
 {
-	const isFillRegion = useFill && ( beat >= ( bpMeasure - library.parseValue(spec.voice.fillLength) ))
+	const isFillRegion = useFill && ( beat >= ( bpMeasure - library.parseValue(spec.fillLength) ))
 
-	if ( beat != 0 && library.probabilityHit(spec.voice.tonicOnOnePct) )
+	if ( beat != 0 && library.probabilityHit(spec.tonicOnOnePct) )
 		semitone = spec.keyRoot
 	else {
 		if ( spec.mode === "chordal" )
@@ -217,8 +217,8 @@ function genEvent( currentTick )
 	}
 
 	let   midiNote  = _clampToRange( semitone, minMidi, maxMidi )
-	const duration  = Math.round( library.parseValue(spec.voice.noteDuration) * spec.ppqn )
-	const velocity  = library.parseValue( spec.voice.velocity )
+	const duration  = Math.round( library.parseValue(spec.noteDuration) * spec.ppqn )
+	const velocity  = library.parseValue( spec.velocity )
 
 	if ( spec.verbose ) {
 		console.log( '        semitone', semitone, '-->', midiNote )

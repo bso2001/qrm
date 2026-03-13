@@ -15,19 +15,17 @@
 	"nMeasures": 32,
 	"mode": "freeform",
 
-	"voice": {
-		"range": [ "E1", "E3" ],
-		"velocity": [ 80, 90 ],
-		"noteDuration": [ 0.5,0.5, 1,1,1, 2,2 ],
-		"fastestNote": "1/32",
+	"range": [ "E1", "E3" ],
+	"velocity": [ 80, 90 ],
+	"noteDuration": [ 0.5,0.5, 1,1,1, 2,2 ],
+	"fastestNote": "1/32",
 
-		"restPct": 0.4,
-		"restOnOnePct": 0.1,
-		"tonicPct": 0.15,
-		"tonicOnOnePct": 0.8,
+	"restPct": 0.4,
+	"restOnOnePct": 0.1,
+	"tonicPct": 0.15,
+	"tonicOnOnePct": 0.8,
 
-		"fillPct": 0.15,
-		"fillLength": [ 2, 3 ],
-		"fillNotes": [ "II", "III", "V" ]
-	}
+	"fillPct": 0.15,
+	"fillLength": [ 2, 3 ],
+	"fillNotes": [ "II", "III", "V" ]
 }
