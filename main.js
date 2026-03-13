@@ -3,25 +3,25 @@
 //   Entry point
 //---------------------------------------------------------------------------------------
 
-const filsys = require("fs")
-const events = require("./events")
-const midi   = require("./midi")
+const fsys = require("fs")
+const riff = require("./riff")
+const midi = require("./midi")
 
 if ( require.main === module )
 {
 	const inputFile = process.argv[2]
 	if ( !inputFile )
 	{
-		console.error( "Usage: node gen.js spec.json" )
+		console.error( "Usage: node main.js input.json" )
 		process.exit(1)
 	}
 
-	const spec = JSON.parse( filsys.readFileSync( inputFile, "utf8" ))
-	const evts = events.generate( spec )
+	const json = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
+	const mldy = riff.generate( json )
 
-	if ( ! evts || evts.length === 0 )
-		throw new Error( "Error: no events generated" )
+	if ( ! mldy || mldy.length === 0 )
+		throw new Error( "Error: no riff generated" )
 
-	midi.writeEvents( evts, spec.ppqn, spec.outputPath || "output.mid" )
+	midi.writeEvents( mldy, json.ppqn, json.outputPath || "output.mid" )
 }
 

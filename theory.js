@@ -18,39 +18,8 @@ const NOTE_BASES =
 	"B" : 11
 }
 
-function parseNoteName( name )
-{
-	const m = name.match( /^([A-G][b#]?)(\d)$/ )
-	if (!m)
-		throw new Error( "Bad note name: " + name )
-
-	const pitch = NOTE_BASES[ m[1] ] + 12		// "modern" note numbers?
-	const octave = parseInt( m[2], 10 )
-
-	return pitch + (octave + 1) * 12
-}
-
-function keyToSemitone( key )
-{
-	const m = key.match( /^([A-G][b#]?)/i )
-	if ( !m )
-		throw new Error( "Bad key: " + key )
-
-	return NOTE_BASES[ m[1] ]
-}
-
 const MINOR = [ 0, 2, 3, 5, 7, 8, 10 ]
 const MAJOR = [ 0, 2, 4, 5, 7, 9, 11 ]
-
-function scaleIntervals( name )
-{
-	if ( name === "minor" )
-		return MINOR
-	if ( name === "major" )
-		return MAJOR
-
-	throw new Error( "Unsupported scale: " + name )
-}
 
 function degreeToSemitone( degreeStr, keyRoot, intervals )
 {
@@ -79,15 +48,24 @@ function degreeToSemitone( degreeStr, keyRoot, intervals )
 	return keyRoot + intervals[n - 1] + accidental
 }
 
+function keyToSemitone( key )
+{
+	const m = key.match( /^([A-G][b#]?)/i )
+	if ( !m )
+		throw new Error( "Bad key: " + key )
+
+	return NOTE_BASES[ m[1] ]
+}
+
 function parseChordSymbol( sym )
 {
-	let bassOverride = null
+	let overBass = null
 
 	if ( sym.includes("/") )
 	{
 		const [main, bass] = sym.split("/")
 		sym = main
-		bassOverride = NOTE_BASES[bass]
+		overBass = NOTE_BASES[bass]
 	}
 
 	const m = sym.match(/^([A-G][b#]?)(.*)$/)
@@ -96,7 +74,7 @@ function parseChordSymbol( sym )
 
 	const rootName = m[1]
 	const qual = m[2].toLowerCase()
-	const root = NOTE_BASES[rootName]
+	const root = (overBass !== null) ? overBass : NOTE_BASES[rootName]
 
 	const chordIntervals =
 	{
@@ -122,9 +100,8 @@ function parseChordSymbol( sym )
 	}
 
 	return {
-		root,
 		notes: chordIntervals[qual] || chordIntervals[""],
-		bassOverride
+		root : root
 	}
 }
 
@@ -145,5 +122,27 @@ function parseDuration( nd )
 	return ( !d || d === "undefined" ) ? 1 : d;
 }
 
-module.exports = { degreeToSemitone, scaleIntervals, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName }
+function parseNoteName( name )
+{
+	const m = name.match( /^([A-G][b#]?)(\d)$/ )
+	if (!m)
+		throw new Error( "Bad note name: " + name )
+
+	const pitch = NOTE_BASES[ m[1] ] + 12		// "modern" note numbers?
+	const octave = parseInt( m[2], 10 )
+
+	return pitch + (octave + 1) * 12
+}
+
+function scaleIntervals( name )
+{
+	if ( name === "minor" )
+		return MINOR
+	if ( name === "major" )
+		return MAJOR
+
+	throw new Error( "Unsupported scale: " + name )
+}
+
+module.exports = { degreeToSemitone, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName, scaleIntervals }
 

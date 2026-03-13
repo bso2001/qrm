@@ -17,12 +17,12 @@
 
 	"range": [ "E1", "E3" ],
 	"velocity": [ 80, 90 ],
-	"noteDuration": [ 0.5,0.5, 1,1,1, 2,2 ],
+	"noteDuration": [ 0.25,0.25, 0.5,0.5,0.5, 1,1  ],
 	"fastestNote": "1/32",
 
-	"restPct": 0.4,
-	"restOnOnePct": 0.1,
-	"tonicPct": 0.15,
+	"restPct": 0.25,
+	"restOnOnePct": 0.05,
+	"tonicPct": 0.4,
 	"tonicOnOnePct": 0.8,
 
 	"fillPct": 0.15,

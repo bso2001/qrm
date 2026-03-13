@@ -5,7 +5,7 @@
 
 const fs = require("fs")
 
-function writeVLQ( value )
+function _writeVLQ( value )
 {
 	const bytes = []
 	let buffer = value & 0x7F
@@ -28,31 +28,31 @@ function writeVLQ( value )
 	return bytes
 }
 
-function encodeEvent( evt )
+function _encodeEvent( evt )
 {
-	const out = []
-	out.push( ...writeVLQ(evt.delta) )
+	const evtData = []
+	evtData.push( ..._writeVLQ(evt.delta) )
 
 	switch ( evt.type )
 	{
 		case "note_on":
-			out.push( 0x90 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
+			evtData.push( 0x90 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
 			break
 		case "note_off":
-			out.push( 0x80 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
+			evtData.push( 0x80 | evt.channel, evt.note & 0x7F, evt.velocity & 0x7F )
 			break
 		case "program_change":
-			out.push( 0xC0 | evt.channel, evt.program & 0x7F )
+			evtData.push( 0xC0 | evt.channel, evt.program & 0x7F )
 			break
 		case "meta":
-			out.push( 0xFF )
+			evtData.push( 0xFF )
 
 			if ( evt.meta_type === "end_of_track" )
-				out.push( 0x2F, 0x00 )
+				evtData.push( 0x2F, 0x00 )
 
 			else if ( evt.meta_type === "tempo" )
 			{
-				out.push(
+				evtData.push(
 					0x51, 0x03,
 					(evt.tempo >> 16) & 0xFF,
 					(evt.tempo >> 8) & 0xFF,
@@ -62,7 +62,7 @@ function encodeEvent( evt )
 
 			else if ( evt.meta_type === "time_signature" )
 			{
-				out.push(
+				evtData.push(
 					0x58, 0x04,
 					evt.numerator,
 					Math.log2(evt.denominator),
@@ -74,18 +74,18 @@ function encodeEvent( evt )
 			break
 	}
 
-	return out
+	return evtData
 }
 
 function writeEvents( events, ticks, outputPath )
 {
 	let trackData = []
 	for ( const evt of events )
-		trackData.push( ...encodeEvent(evt) )
+		trackData.push( ..._encodeEvent(evt) )
 
 	const hasEOT = events.some( e => e.type === "meta" && e.meta_type === "end_of_track" )
 	if ( !hasEOT )
-		trackData.push( ...writeVLQ(0), 0xFF, 0x2F, 0x00 )
+		trackData.push( ..._writeVLQ(0), 0xFF, 0x2F, 0x00 )
 
 	const header = Buffer.alloc( 14 )
 	header.write( "MThd", 0 )
