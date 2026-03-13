@@ -1,0 +1,109 @@
+
+//---------------------------------------------------------------------------------------
+//   Beat generation: fill the current beat for the supplied `riff`
+//---------------------------------------------------------------------------------------
+
+const library = require("./lib")
+const theory  = require("./theory")
+
+function _chordAt( riff )
+{
+	if ( ! riff.chords || riff.chords.length === 0 )
+		return null
+
+	let last = riff.chords[0]
+	for ( const p of riff.chords ) {
+		if ( p.measure - 1 <= riff.measure )
+			last = p
+	}
+
+	return theory.parseChordSymbol( last.chord )
+}
+
+function _chordalNote( riff, chord, isFill )
+{
+	if ( isFill )
+	{
+		const deg = library.randomChoice( riff.fillNotes )
+		return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
+	}
+
+	if ( library.probabilityHit( riff.tonicPct ))
+		return chord.root
+
+	if ( library.probabilityHit( riff.chordTonePct ))
+		return chord.root + library.randomChoice( chord.notes )
+
+	return chord.root + library.randomChoice( [2, -2] )
+}
+
+function _freeformNote( riff )
+{
+	let offset = 0
+	
+	if ( ! library.probabilityHit( riff.tonicPct ))
+		offset = library.randomChoice( riff.intrvls )
+
+	return riff.keyRoot + offset
+}
+
+function _clampToRange( mNote, riff )
+{
+	while ( mNote < riff.minMidi )
+		mNote += 12
+	while ( mNote > riff.maxMidi )
+		mNote -= 12
+
+	return mNote
+}
+
+function generate( riff ) 
+{
+	const duration = Math.round( library.parseValue(riff.noteDuration) * riff.ppqn )
+
+	let endTick = riff.thisTick + duration
+	if ( endTick > riff.lastTick )
+		endTick = riff.lastTick
+
+					// see if we're taking a breather; we don't rest twice in a row
+					// also: resting on first beat is an input pct that must be checked
+
+	let resting = ( riff.prevRest == false && library.probabilityHit( riff.restPct ))
+	if ( resting && riff.thisBeat == 0 && ! library.probabilityHit( riff.restOnOnePct ))
+		resting = false
+
+	if ( resting ) {
+		riff.prevRest = true
+		if ( riff.verbose )
+			console.log( library.PAD8, 'resting on beat', riff.thisBeat, 'endTick =', endTick)
+	} else {
+
+		riff.prevRest = false
+
+		const useFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
+		// const isFillRegion = useFill && ( riff.thisBeat >= ( riff.meter.numerator - library.parseValue(riff.fillLength) ))
+		const isFillRegion = false
+
+		let semitone
+
+		if ( riff.thisBeat != 0 && library.probabilityHit(riff.tonicOnOnePct) )
+			semitone = riff.keyRoot
+		else {
+			if ( riff.mode === "chordal" )
+				semitone = _chordalNote( riff, _chordAt(riff), isFillRegion )
+			else
+				semitone = _freeformNote( riff )
+		}
+
+		const midiNote = _clampToRange( semitone, riff )
+		const velocity = library.parseValue( riff.velocity )
+
+		riff.events.push( library.noteOn(  riff.thisTick, midiNote, velocity ))
+		riff.events.push( library.noteOff( endTick, midiNote ))		// hopefully this note is already off
+	}
+
+	riff.thisTick = endTick
+}
+
+module.exports = { generate }
+
