@@ -1,4 +1,9 @@
 
+function isAlpha( ch )
+{
+	return /^[A-Z]$/i.test( ch )
+}
+
 function noteOff( tick, note )
 {
 	return {
@@ -48,5 +53,5 @@ const PAD2 = '  '
 const PAD4 = (PAD2 + PAD2)
 const PAD8 = (PAD4 + PAD4)
 
-module.exports = { noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8 }
+module.exports = { isAlpha, noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8 }
 

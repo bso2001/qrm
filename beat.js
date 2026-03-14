@@ -59,9 +59,13 @@ function _clampToRange( mNote, riff )
 
 function generate( riff ) 
 {
-	const duration = Math.round( library.parseValue(riff.noteDuration) * riff.ppqn )
+					// determine event (note or rest) duration in ticks. tdiv is the "PPQN divisor"
+					// that yields the # of ticks for a given note length. eg; the tdiv for an
+					// eighth note is 2; 480/2 = 240: the # of ticks for a quaver
 
-	let endTick = riff.thisTick + duration
+	const tdiv  = library.randomChoice( riff.timings )
+	let endTick = riff.thisTick + (riff.ppqn / tdiv)
+
 	if ( endTick > riff.lastTick )
 		endTick = riff.lastTick
 
@@ -86,7 +90,7 @@ function generate( riff )
 
 		let semitone
 
-		if ( riff.thisBeat != 0 && library.probabilityHit(riff.tonicOnOnePct) )
+		if ( riff.thisBeat == 0 && library.probabilityHit(riff.tonicOnOnePct) )
 			semitone = riff.keyRoot
 		else {
 			if ( riff.mode === "chordal" )

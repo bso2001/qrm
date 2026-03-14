@@ -1,0 +1,5 @@
+#!/bin/sh
+clear
+rm -f ~/Desktop/freeform.mid
+node main.js freeform.json
+ls -l ~/Desktop/freeform.mid

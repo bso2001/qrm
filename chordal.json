@@ -24,7 +24,7 @@
 
 	"range": [ "E1", "E3" ],
 	"velocity": [ 70, 110 ],
-	"noteDuration": 1,
+	"duration": 1,
 	"fastestNote": "1/8",
 
 	"restPct": 0.6,

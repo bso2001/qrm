@@ -1,6 +1,9 @@
+
 //---------------------------------------------------------------------------------------
 //   Theory helpers
 //---------------------------------------------------------------------------------------
+
+const library = require("./lib")
 
 const NOTE_BASES =
 {
@@ -104,6 +107,8 @@ function parseChordSymbol( sym )
 		root : root
 	}
 }
+	
+	// "duration": [ "1/16c", "1/8d", "1/4b", "1/2a" ]
 
 function parseDuration( nd )
 {
@@ -118,8 +123,28 @@ function parseDuration( nd )
 		"1/64" : 16
 	}
 
-	let d = ndDivisors[nd]
-	return ( !d || d === "undefined" ) ? 1 : d;
+	const timings = []
+
+	for ( dspec of nd ) {
+		let   div, multiplier = 1
+		const len = dspec.length
+		const lastchar = dspec.charAt( len-1 )
+
+		if ( library.isAlpha( lastchar )) {
+			multiplier = 1 + "abcdefghijklmnopqrstuvwxyz".indexOf( lastchar ) 
+			div = dspec.substring( 0, len-1 )
+		} else
+			div = dspec.substring( 0, 32 )
+
+		const dval = ndDivisors[ div ]
+		if ( !dval || dval === "undefined" )
+			continue
+
+		for ( let i = 0; i < multiplier; i++ )
+			timings.push( dval )
+	}
+
+	return timings
 }
 
 function parseNoteName( name )
@@ -134,7 +159,7 @@ function parseNoteName( name )
 	return pitch + (octave + 1) * 12
 }
 
-function scaleIntervals( name )
+function scaleToIntvls( name )
 {
 	if ( name === "minor" )
 		return MINOR
@@ -144,5 +169,5 @@ function scaleIntervals( name )
 	throw new Error( "Unsupported scale: " + name )
 }
 
-module.exports = { degreeToSemitone, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName, scaleIntervals }
+module.exports = { degreeToSemitone, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName, scaleToIntvls }
 

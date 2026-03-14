@@ -9,21 +9,21 @@ const theory  = require("./theory")
 
 function generate( riff )
 {
-			// we expand the input def, adding derived/calculated `global info` for convenience
-			// calling it `riff` the object also holds the MIDI events as they are generated
-			// as well as generation status data such as beat and tick numbers
+			// we expand the input def, adding derived/calculated `global info` for convenience.
+			// calling it `riff`, the object will hold MIDI events as they are generated;
+			// as well as process status data such as current beat and tick positions
 
-	riff.intrvls  = theory.scaleIntervals( riff.scale )
-	riff.keyRoot  = theory.keyToSemitone( riff.key )
-	riff.quikval  = theory.parseDuration( riff.fastestNote )
-	riff.minMidi  = theory.parseNoteName( riff.range[0] )
-	riff.maxMidi  = theory.parseNoteName( riff.range[1] )
+	riff.events   = []
+	riff.prevRest = false
 	riff.measure  = 0
 	riff.thisBeat = 0
-	riff.thisTick = 0
 	riff.lastTick = 0
-	riff.prevRest = false
-	riff.events   = []
+	riff.thisTick = 0
+	riff.intrvls  = theory.scaleToIntvls( riff.scale )
+	riff.keyRoot  = theory.keyToSemitone( riff.key )
+	riff.timings  = theory.parseDuration( riff.duration )
+	riff.minMidi  = theory.parseNoteName( riff.range[0] )
+	riff.maxMidi  = theory.parseNoteName( riff.range[1] )
 
 	if ( riff.verbose ) {
 		console.log( '-------------------------------------------------------' )
@@ -32,7 +32,6 @@ function generate( riff )
 
 	for ( let measure = 0; measure < riff.nMeasures; measure++ ) {
 		riff.thisBeat = 0
-		riff.lastTick = (riff.thisTick + (riff.meter.numerator * riff.ppqn)) // ?? - riff.quikval 
 
 		if ( riff.verbose ) {
 			console.log( '-------------------------------------------------------' )
@@ -40,8 +39,9 @@ function generate( riff )
 		}
 
 		for ( ; riff.thisBeat < riff.meter.numerator; riff.thisBeat++ ) {
+			riff.lastTick = (riff.thisTick + riff.ppqn)
 			if ( riff.verbose )
-				console.log( library.PAD4, 'Beat', riff.thisBeat )
+				console.log( library.PAD4, 'Beat', riff.thisBeat, 'lastTick', riff.lastTick )
 
 			while ( riff.thisTick < riff.lastTick ) {
 				if ( riff.verbose )
