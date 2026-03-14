@@ -1,5 +1,5 @@
 {
-	"verbose" : true,
+	"verbose" : false,
 	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
 
 	"tempo": 85,
@@ -23,6 +23,7 @@
 	"restOnOnePct": 0,
 	"tonicPct": 0.17,
 	"tonicOnOnePct": 1,
+	"passingNotes": [ "II", "V" ],
 
 	"fillPct": 0.15,
 	"fillLength": [ 2, 3 ],

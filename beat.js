@@ -20,13 +20,9 @@ function _chordAt( riff )
 	return theory.parseChordSymbol( last.chord )
 }
 
-function _chordalNote( riff, chord, isFill )
+function _chordalNote( riff, chord )
 {
-	if ( isFill )
-	{
-		const deg = library.randomChoice( riff.fillNotes )
-		return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
-	}
+	chord = _chordAt(riff)
 
 	if ( library.probabilityHit( riff.tonicPct ))
 		return chord.root
@@ -76,25 +72,34 @@ function generate( riff )
 	if ( resting && riff.thisBeat == 0 && ! library.probabilityHit( riff.restOnOnePct ))
 		resting = false
 
-	if ( resting ) {
+	if ( resting )
+	{
 		riff.prevRest = true
 		if ( riff.verbose )
 			console.log( library.PAD8, 'resting on beat', riff.thisBeat, 'endTick =', endTick)
-	} else {
-
+	}
+	else
+	{
 		riff.prevRest = false
 
-		const useFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
-		// const isFillRegion = useFill && ( riff.thisBeat >= ( riff.meter.numerator - library.parseValue(riff.fillLength) ))
+		const isFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
 		const isFillRegion = false
+		// const isFillRegion = isFill && ( riff.thisBeat >= ( riff.meter.numerator - library.parseValue(riff.fillLength) ))
+
+		if ( isFill )
+		{
+			const deg = library.randomChoice( riff.fillNotes )
+			return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
+		}
 
 		let semitone
 
 		if ( riff.thisBeat == 0 && library.probabilityHit(riff.tonicOnOnePct) )
 			semitone = riff.keyRoot
-		else {
+		else
+		{
 			if ( riff.mode === "chordal" )
-				semitone = _chordalNote( riff, _chordAt(riff), isFillRegion )
+				semitone = _chordalNote( riff, _chordAt(riff) )
 			else
 				semitone = _freeformNote( riff )
 		}

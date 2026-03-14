@@ -25,25 +25,30 @@ function generate( riff )
 	riff.minMidi  = theory.parseNoteName( riff.range[0] )
 	riff.maxMidi  = theory.parseNoteName( riff.range[1] )
 
-	if ( riff.verbose ) {
+	if ( riff.verbose )
+	{
 		console.log( '-------------------------------------------------------' )
 		console.log( 'starting riff =', riff )
 	}
 
-	for ( let measure = 0; measure < riff.nMeasures; measure++ ) {
+	for ( let measure = 0; measure < riff.nMeasures; measure++ )
+	{
 		riff.thisBeat = 0
 
-		if ( riff.verbose ) {
+		if ( riff.verbose )
+		{
 			console.log( '-------------------------------------------------------' )
 			console.log( 'We are on Measure #', measure, '; lastTick =' , riff.lastTick )
 		}
 
-		for ( ; riff.thisBeat < riff.meter.numerator; riff.thisBeat++ ) {
+		for ( ; riff.thisBeat < riff.meter.numerator; riff.thisBeat++ )
+		{
 			riff.lastTick = (riff.thisTick + riff.ppqn)
 			if ( riff.verbose )
 				console.log( library.PAD4, 'Beat', riff.thisBeat, 'lastTick', riff.lastTick )
 
-			while ( riff.thisTick < riff.lastTick ) {
+			while ( riff.thisTick < riff.lastTick )
+			{
 				if ( riff.verbose )
 					console.log( library.PAD4, 'thisTick =', riff.thisTick, 'lastTick =', riff.lastTick )
 				beat.generate( riff )
@@ -56,14 +61,16 @@ function generate( riff )
 	let evts  = []
 	let ptime = 0
 
-	evts.push({
+	evts.push(
+	{
 		delta: 0,
 		type: "meta",
 		meta_type: "tempo",
 		tempo: Math.round( 60000000 / riff.tempo )
 	})
 
-	evts.push({
+	evts.push(
+	{
 		delta: 0,
 		type: "meta",
 		meta_type: "time_signature",
@@ -83,7 +90,8 @@ function generate( riff )
 
 	evts.push({ delta: 0, type: "meta", meta_type: "end_of_track" })
 
-	if ( riff.verbose ) {
+	if ( riff.verbose )
+	{
 		console.log( '-------------------------------------------------------' )
 		console.log( 'evts =', evts )
 	}

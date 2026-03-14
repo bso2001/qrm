@@ -7,6 +7,8 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 ### JSON Input Description
 
 * _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the JSON spec).
+* _scale_ is currently **major** or **minor**. Internally this becomes the intervals of the given mode, and is used as a source of passing tones.
+* _passingNotes_ can be used to define a more limited set.
 * We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
 * _duration_ is one or more of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. 
 * Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.

@@ -125,18 +125,26 @@ function parseDuration( nd )
 
 	const timings = []
 
-	for ( dspec of nd ) {
-		let   div, multiplier = 1
-		const len = dspec.length
-		const lastchar = dspec.charAt( len-1 )
+	for ( dspec of nd )
+	{
+		const dslen = dspec.length
+		const lastchar = dspec.charAt( dslen-1 )
+		let   multiplier, nlen
 
-		if ( library.isAlpha( lastchar )) {
+		if ( ! library.isAlpha( lastchar ))
+		{
+			multiplier = 1
+			nlen = dslen
+		}
+		else 
+		{
 			multiplier = 1 + "abcdefghijklmnopqrstuvwxyz".indexOf( lastchar ) 
-			div = dspec.substring( 0, len-1 )
-		} else
-			div = dspec.substring( 0, 32 )
+			nlen = dslen - 1
+		}
 
-		const dval = ndDivisors[ div ]
+		const note = dspec.substring( 0, nlen )
+		const dval = ndDivisors[ note ]
+
 		if ( !dval || dval === "undefined" )
 			continue
 
