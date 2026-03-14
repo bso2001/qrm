@@ -1,5 +1,5 @@
 {
-	"verbose" : false,
+	"loglevel" : 3,
 	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
 
 	"tempo": 85,

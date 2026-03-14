@@ -1,5 +1,5 @@
 {
-	"verbose" : false,
+	"loglevel" : 1,
 	"outputPath": "chordal.mid",
 
 	"meter": {

@@ -75,7 +75,7 @@ function generate( riff )
 	if ( resting )
 	{
 		riff.prevRest = true
-		if ( riff.verbose )
+		if ( riff.loglevel == 3 )
 			console.log( library.PAD8, 'resting on beat', riff.thisBeat, 'endTick =', endTick)
 	}
 	else
@@ -108,7 +108,7 @@ function generate( riff )
 		const velocity = library.parseValue( riff.velocity )
 
 		riff.events.push( library.noteOn(  riff.thisTick, midiNote, velocity ))
-		riff.events.push( library.noteOff( endTick, midiNote ))		// hopefully this note is already off
+		riff.events.push( library.noteOff( endTick, midiNote ))
 	}
 
 	riff.thisTick = endTick

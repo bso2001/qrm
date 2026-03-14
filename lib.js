@@ -53,5 +53,13 @@ const PAD2 = '  '
 const PAD4 = (PAD2 + PAD2)
 const PAD8 = (PAD4 + PAD4)
 
-module.exports = { isAlpha, noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8 }
+const inspectOptions =
+{
+	showHidden : false,
+	depth :		 null,
+	colors :	 true,
+	maxArrayLength : null
+}
+
+module.exports = { isAlpha, noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8, inspectOptions }
 

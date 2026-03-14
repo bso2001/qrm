@@ -16,6 +16,7 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 * If we do rest based on _restPct_, the rest length is based on _duration_.
 * _restFirstBeat_ controls whether a rest on beat 0 is allowed.
 * Most places a single value works? An array will cause a random choice.
+* _loglevel_ requests increasing amount of debugging detail: currently **0**, **1**, **2**, or **3** are allowed. 0 means no debug info.
 
 ### MIDI Timing
 
