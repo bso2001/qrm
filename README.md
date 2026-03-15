@@ -85,3 +85,8 @@ MIDI specifications typically use a default of 480 ticks per quarter note, which
 
 * We could pick freeforms either from key or "fill notes" why would we need both? Same on chordal: just pick fill notes from the chord.
 * BTW. fill notes are "intervals" ( "II", "III", "V", etc ), and could be optional, only used to add notes "out of key or chord"
+
+```
+© 2026. Sven Bert Olsson.
+```
+
