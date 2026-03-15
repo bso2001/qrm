@@ -23,10 +23,10 @@ const NOTE_BASES =
 
 const MINOR = [ 0, 2, 3, 5, 7, 8, 10 ]
 const MAJOR = [ 0, 2, 4, 5, 7, 9, 11 ]
+const ROMAN = { I:0, II:1, III:2, IV:3, V:4, VI:5, VII:6 }
 
 function degreeToSemitone( degreeStr, keyRoot, intervals )
 {
-	const romanMap = { I:0, II:1, III:2, IV:3, V:4, VI:5, VII:6 }
 	let accidental = 0
 	let core = degreeStr
 
@@ -41,14 +41,35 @@ function degreeToSemitone( degreeStr, keyRoot, intervals )
 		core = degreeStr.slice( 1 )
 	}
 
-	if ( romanMap[core] !== undefined )
-	{
-		const idx = romanMap[core]
+	if ( ROMAN[core] !== undefined ) {
+		const idx = ROMAN[core]
 		return keyRoot + intervals[idx] + accidental
 	}
 
 	const n = parseInt( core, 10 )
 	return keyRoot + intervals[n - 1] + accidental
+}
+
+function findIntervals( riff )
+{
+	if ( riff.passingNotes && riff.passingNotes.length > 0 ) {
+		const offsets = []
+
+		for ( n of riff.passingNotes )
+		{
+			if ( ROMAN[n] !== undefined )
+				offsets.push( ROMAN[n] )
+		}
+
+		return offsets
+	}
+
+	if ( riff.mode === "minor" )
+		return MINOR
+	if ( riff.mode === "major" )
+		return MAJOR
+
+	throw new Error( "Unsupported mode: " + riff.mode )
 }
 
 function keyToSemitone( key )
@@ -167,15 +188,5 @@ function parseNoteName( name )
 	return pitch + (octave + 1) * 12
 }
 
-function scaleToIntvls( name )
-{
-	if ( name === "minor" )
-		return MINOR
-	if ( name === "major" )
-		return MAJOR
-
-	throw new Error( "Unsupported scale: " + name )
-}
-
-module.exports = { degreeToSemitone, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName, scaleToIntvls }
+module.exports = { degreeToSemitone, findIntervals, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName }
 

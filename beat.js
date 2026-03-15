@@ -98,7 +98,7 @@ function generate( riff )
 			semitone = riff.keyRoot
 		else
 		{
-			if ( riff.mode === "chordal" )
+			if ( riff.type === "chordal" )
 				semitone = _chordalNote( riff, _chordAt(riff) )
 			else
 				semitone = _freeformNote( riff )

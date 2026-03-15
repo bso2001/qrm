@@ -1,19 +1,14 @@
 {
-	"loglevel" : 3,
-	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid",
-
+	"type": "freeform",
+	"nMeasures": 32,
+	"key": "A",
+	"mode": "minor",
 	"tempo": 85,
+
 	"meter": {
 		"numerator":   4,
 		"denominator": 4
 	},
-	"ppqn": 480,
-
-	"key": "A",
-	"scale": "minor",
-
-	"nMeasures": 32,
-	"mode": "freeform",
 
 	"range": [ "E1", "E3" ],
 	"velocity": [ 80, 90 ],
@@ -23,9 +18,11 @@
 	"restOnOnePct": 0,
 	"tonicPct": 0.17,
 	"tonicOnOnePct": 1,
-	"passingNotes": [ "II", "V" ],
 
 	"fillPct": 0.15,
 	"fillLength": [ 2, 3 ],
-	"fillNotes": [ "II", "III", "V" ]
+
+	"loglevel" : 3,
+	"ppqn": 480,
+	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid"
 }

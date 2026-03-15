@@ -21,7 +21,7 @@ function generate( riff )
 	riff.lastTick = 0
 	riff.thisTick = 0
 
-	riff.intrvls  = theory.scaleToIntvls( riff.scale )
+	riff.intrvls  = theory.findIntervals( riff )
 	riff.keyRoot  = theory.keyToSemitone( riff.key )
 	riff.timings  = theory.parseDuration( riff.duration )
 	riff.minMidi  = theory.parseNoteName( riff.range[0] )

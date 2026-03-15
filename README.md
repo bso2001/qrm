@@ -11,8 +11,7 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 * _passingNotes_ can be used to define a more limited set.
 * We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
 * _duration_ is one or more of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. 
-* Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.
-* For example, **"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ]** specifies events to have one of four note lengths, with Eigths and Quarters carrying twice the weight of sixteenths and halves.
+* Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.  For example, **"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ]** specifies events to have one of four note lengths, with Eigths and Quarters carrying twice the weight of sixteenths and halves.
 * If we do rest based on _restPct_, the rest length is based on _duration_.
 * _restFirstBeat_ controls whether a rest on beat 0 is allowed.
 * Most places a single value works? An array will cause a random choice.

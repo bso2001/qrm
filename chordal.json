@@ -1,19 +1,14 @@
 {
-	"loglevel" : 1,
-	"outputPath": "chordal.mid",
+	"type": "chordal",
+	"nMeasures": 16,
+	"key": "E",
+	"mode": "minor",
+	"tempo": 140,
 
 	"meter": {
 		"numerator":   4,
 		"denominator": 4
 	},
-	"tempo": 140,
-	"ppqn": 480,
-
-	"key": "E",
-	"scale": "minor",
-
-	"nMeasures": 16,
-	"mode": "chordal",
 
 	"chords": [
 		{ "measure": 1, "chord": "Em" },
@@ -25,14 +20,17 @@
 	"range": [ "E1", "E3" ],
 	"velocity": [ 70, 110 ],
 	"duration": 1,
-	"fastestNote": "1/8",
 
 	"restPct": 0.6,
 	"restOnOnePct": 0,
 	"tonicPct": 0.5,
 	"tonicOnOnePct": 0.5,
 	"chordTonePct": 0.3,
+
 	"fillPct": 0.15,
 	"fillLength": 2,
-	"fillNotes": [ "II", "V", "VI" ]
+
+	"loglevel" : 1,
+	"ppqn": 480,
+	"outputPath": "chordal.mid"
 }
