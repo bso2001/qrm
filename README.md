@@ -1,6 +1,6 @@
 ## Create quasi-random Riffs from JSON Input
 
-This started as a AI generated project (GPT-5-something). We were able to quickly get an app skeleton built as well as an "apparently working" first version. As AI was requested to add features, things broke.
+This started as a AI generated project (GPT-5-something). We were able to quickly get an app skeleton built, as well as an "apparently working" first version. As AI was requested to add features, things broke.
 
 **This is important!** Don't ever go down the rabbit hole of debugging with the "help" of an AI. Trust me.
 
@@ -8,7 +8,7 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 * _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the JSON spec).
 * _scale_ is currently **major** or **minor**. Internally this becomes the intervals of the given mode, and is used as a source of passing tones.
-* _passingNotes_ can be used to define a more limited set.
+* _passingNotes_ can be used to define a more limited set. These are specified as "classic intervals" – eg: **[ "II", "III", "bV", "#VI", "VII" ]**
 * We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
 * _duration_ is one or more of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. 
 * Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.  For example, **"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ]** specifies events to have one of four note lengths, with Eigths and Quarters carrying twice the weight of sixteenths and halves.

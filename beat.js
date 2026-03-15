@@ -82,15 +82,13 @@ function generate( riff )
 	{
 		riff.prevRest = false
 
-		const isFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
-		const isFillRegion = false
+		// const isFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
 		// const isFillRegion = isFill && ( riff.thisBeat >= ( riff.meter.numerator - library.parseValue(riff.fillLength) ))
 
-		if ( isFill )
-		{
-			const deg = library.randomChoice( riff.fillNotes )
-			return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
-		}
+		// if ( isFill ) {
+			// const deg = library.randomChoice( riff.fillNotes )
+			// return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
+		// }
 
 		let semitone
 

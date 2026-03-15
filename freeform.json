@@ -21,8 +21,9 @@
 
 	"fillPct": 0.15,
 	"fillLength": [ 2, 3 ],
+	"passingNotes": [ "II", "III", "bV", "bVI", "VII" ],
 
-	"loglevel" : 3,
+	"loglevel" : 0,
 	"ppqn": 480,
 	"outputPath": "/Users/bert.olsson/Desktop/freeform.mid"
 }

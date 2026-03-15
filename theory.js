@@ -23,45 +23,47 @@ const NOTE_BASES =
 
 const MINOR = [ 0, 2, 3, 5, 7, 8, 10 ]
 const MAJOR = [ 0, 2, 4, 5, 7, 9, 11 ]
-const ROMAN = { I:0, II:1, III:2, IV:3, V:4, VI:5, VII:6 }
+const ROMAN = { I:0, II:2, III:3, IV:4, V:5, VI:6, VII:7 }
 
-function degreeToSemitone( degreeStr, keyRoot, intervals )
+function _degreeToSemitone( degreeStr, keyRoot )
 {
 	let accidental = 0
-	let core = degreeStr
+	let offset = 0
+	let degree = degreeStr
 
 	if ( degreeStr.startsWith("b") )
 	{
 		accidental = -1
-		core = degreeStr.slice( 1 )
+		degree = degreeStr.slice( 1 )
 	}
 	else if ( degreeStr.startsWith("#") )
 	{
 		accidental = 1
-		core = degreeStr.slice( 1 )
+		degree = degreeStr.slice( 1 )
 	}
 
-	if ( ROMAN[core] !== undefined ) {
-		const idx = ROMAN[core]
-		return keyRoot + intervals[idx] + accidental
+	if ( ROMAN[degree] !== undefined )
+		offset = ROMAN[degree]
+	else
+	{
+		const n = parseInt( degree, 10 )
+		offset = n - 1
 	}
 
-	const n = parseInt( core, 10 )
-	return keyRoot + intervals[n - 1] + accidental
+	return keyRoot + offset + accidental
 }
 
 function findIntervals( riff )
 {
 	if ( riff.passingNotes && riff.passingNotes.length > 0 ) {
-		const offsets = []
+		const pni = []
 
-		for ( n of riff.passingNotes )
-		{
-			if ( ROMAN[n] !== undefined )
-				offsets.push( ROMAN[n] )
+		for ( pn of riff.passingNotes ) {
+			const nn = _degreeToSemitone( pn, riff.keyRoot )
+			pni.push( nn )
 		}
 
-		return offsets
+		return pni
 	}
 
 	if ( riff.mode === "minor" )
@@ -188,5 +190,5 @@ function parseNoteName( name )
 	return pitch + (octave + 1) * 12
 }
 
-module.exports = { degreeToSemitone, findIntervals, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName }
+module.exports = { findIntervals, keyToSemitone, parseChordSymbol, parseDuration, parseNoteName }
 
