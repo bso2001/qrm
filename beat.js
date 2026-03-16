@@ -9,15 +9,9 @@ const theory  = require("./theory")
 function _chordAt( riff )
 {
 	if ( ! riff.chords || riff.chords.length === 0 )
-		return null
+		throw new Error( "Bad chordal def: " + riff )
 
-	let last = riff.chords[0]
-	for ( const p of riff.chords ) {
-		if ( p.measure - 1 <= riff.measure )
-			last = p
-	}
-
-	return theory.parseChordSymbol( last.chord )
+	return theory.parseChordSymbol( riff.chords[riff.thisBeat] )
 }
 
 function _tonic( riff )
@@ -35,17 +29,12 @@ function _tonic( riff )
 	return tonic
 }
 
-function _chordalNote( riff, chord )
+function _chordalNote( riff )
 {
-	chord = _chordAt(riff)
+	const chord  = _chordAt( riff )
+	const offset = _tonic( riff ) ? 0 : library.randomChoice( chord.notes )
 
-	if ( _tonic( riff ))
-		return chord.root
-
-	if ( library.probabilityHit( riff.chordTonePct ))
-		return chord.root + library.randomChoice( chord.notes )
-
-	return chord.root + library.randomChoice( [2, -2] )
+	return chord.root + offset
 }
 
 function _freeformNote( riff )
@@ -111,7 +100,7 @@ function generate( riff )
 		riff.prevRest = false
 
 		if ( riff.type === "chordal" )
-			semitone = _chordalNote( riff, _chordAt(riff) )
+			semitone = _chordalNote( riff )
 		else
 			semitone = _freeformNote( riff )
 

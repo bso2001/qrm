@@ -1,5 +1,8 @@
 #!/bin/sh
 clear
-rm -f ~/Desktop/freeform.mid
-node main.js freeform.json
-ls -l ~/Desktop/freeform.mid
+#rm -f ~/Desktop/freeform.mid
+#node main.js freeform.json
+#ls -l ~/Desktop/freeform.mid
+rm -f ~/Desktop/chordal.mid
+node main.js chordal.json
+ls -l ~/Desktop/chordal.mid

@@ -1,8 +1,8 @@
 {
 	"type": "chordal",
-	"nMeasures": 16,
-	"key": "E",
-	"mode": "minor",
+	"nMeasures": 32,
+	"key": "C",
+	"mode": "major",
 	"tempo": 140,
 
 	"meter": {
@@ -11,21 +11,15 @@
 	},
 
 	"range": [ "E1", "E3" ],
-	"velocity": [ 70, 110 ],
-	"duration": 1,
+	"velocity": [ 70, 80 ],
+	"duration": [ "1/8c", "1/4b", "1/2a" ],
 
-	"restPct": [ 0.0, 0.3, 0.4, 0.5 ],
-	"tonicPct": 0.5,
+	"restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
+	"tonicPct": [ 0.99, 0.4, 0.4, 0.1 ],
 
-	"chords": [
-		{ "measure": 1, "chord": "Em" },
-		{ "measure": 2, "chord": "Cmaj7" },
-		{ "measure": 3, "chord": "Bm7" },
-		{ "measure": 4, "chord": "A" }
-	],
-	"chordTonePct": 0.3,
+	"chords": [ "Cm7", "Am", "F", "G" ],
 
-	"loglevel" : 1,
+	"loglevel" : 0,
 	"ppqn": 480,
-	"outputPath": "chordal.mid"
+	"outputPath": "/Users/bert.olsson/Desktop/chordal.mid"
 }
