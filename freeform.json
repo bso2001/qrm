@@ -14,14 +14,8 @@
 	"velocity": [ 80, 90 ],
 	"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ],
 
-	"restPct": 0.3,
-	"restOnOnePct": 0,
-	"tonicPct": 0.17,
-	"tonicOnOnePct": 1,
-
-	"fillPct": 0.15,
-	"fillLength": [ 2, 3 ],
-	"passingNotes": [ "II", "III", "bV", "bVI", "VII" ],
+	"restPct": [ 0.0, 0.3, 0.3, 0.0 ],
+	"tonicPct": [ 0.99, 0.98, 0.40, 0.10 ],
 
 	"loglevel" : 0,
 	"ppqn": 480,

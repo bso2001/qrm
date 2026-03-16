@@ -20,11 +20,26 @@ function _chordAt( riff )
 	return theory.parseChordSymbol( last.chord )
 }
 
+function _tonic( riff )
+{
+	let tonic = true
+
+	if ( Array.isArray( riff.tonicPct ))
+	{
+		if ( ! library.probabilityHit( riff.tonicPct [ riff.thisBeat ] ))
+			tonic = false
+	}
+	else if ( ! library.probabilityHit( riff.tonicPct ))
+			tonic = false
+
+	return tonic
+}
+
 function _chordalNote( riff, chord )
 {
 	chord = _chordAt(riff)
 
-	if ( library.probabilityHit( riff.tonicPct ))
+	if ( _tonic( riff ))
 		return chord.root
 
 	if ( library.probabilityHit( riff.chordTonePct ))
@@ -37,7 +52,7 @@ function _freeformNote( riff )
 {
 	let offset = 0
 	
-	if ( ! library.probabilityHit( riff.tonicPct ))
+	if ( ! _tonic( riff ))
 		offset = library.randomChoice( riff.intrvls )
 
 	return riff.keyRoot + offset
@@ -65,12 +80,23 @@ function generate( riff )
 	if ( endTick > riff.lastTick )
 		endTick = riff.lastTick
 
-					// see if we're taking a breather; we don't rest twice in a row
-					// also: resting on first beat is an input pct that must be checked
+					// see if we're taking a breather; we don't rest twice in a row; that should
+					// be a param! restPct can be a single value, or a value per beat
 
-	let resting = ( riff.prevRest == false && library.probabilityHit( riff.restPct ))
-	if ( resting && riff.thisBeat == 0 && ! library.probabilityHit( riff.restOnOnePct ))
+	let resting = true
+
+	if ( riff.prevRest == false )
 		resting = false
+
+	if ( resting )
+	{
+		if ( Array.isArray(riff.restPct) ) {
+			if ( ! library.probabilityHit( riff.restPct [ riff.thisBeat ] ))
+				resting = false
+		}
+		else if ( ! library.probabilityHit( riff.restPct ))
+			resting = false
+	}
 
 	if ( resting )
 	{
@@ -80,27 +106,14 @@ function generate( riff )
 	}
 	else
 	{
-		riff.prevRest = false
-
-		// const isFill = library.probabilityHit( riff.fillPct ) && riff.fillNotes && riff.fillNotes.length > 0
-		// const isFillRegion = isFill && ( riff.thisBeat >= ( riff.meter.numerator - library.parseValue(riff.fillLength) ))
-
-		// if ( isFill ) {
-			// const deg = library.randomChoice( riff.fillNotes )
-			// return theory.degreeToSemitone( deg, riff.keyRoot, riff.intrvls )
-		// }
-
 		let semitone
 
-		if ( riff.thisBeat == 0 && library.probabilityHit(riff.tonicOnOnePct) )
-			semitone = riff.keyRoot
+		riff.prevRest = false
+
+		if ( riff.type === "chordal" )
+			semitone = _chordalNote( riff, _chordAt(riff) )
 		else
-		{
-			if ( riff.type === "chordal" )
-				semitone = _chordalNote( riff, _chordAt(riff) )
-			else
-				semitone = _freeformNote( riff )
-		}
+			semitone = _freeformNote( riff )
 
 		const midiNote = _clampToRange( semitone, riff )
 		const velocity = library.parseValue( riff.velocity )

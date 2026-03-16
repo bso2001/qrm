@@ -6,15 +6,15 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 ### JSON Input Description
 
-* _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the JSON spec).
-* _scale_ is currently **major** or **minor**. Internally this becomes the intervals of the given mode, and is used as a source of passing tones.
+* _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the _internal_ JSON).
+* _scale_ is currently **major** or **minor**. Internally, this becomes the intervals of the given mode, and is used as a source of passing tones.
 * _passingNotes_ can be used to define a more limited set. These are specified as "classic intervals" – eg: **[ "II", "III", "bV", "#VI", "VII" ]**
 * We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
 * _duration_ is one or more of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. 
 * Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.  For example, **"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ]** specifies events to have one of four note lengths, with Eigths and Quarters carrying twice the weight of sixteenths and halves.
+* _restPct_ can be a single value; more likely, an array is useful. Each array element is the probably of a rest during the corresponding beat. Thus, if meter denominator is **4**, there should be four array entries; eg: [ **0**, **0.25**, **0.25**, **0.1** ].
 * If we do rest based on _restPct_, the rest length is based on _duration_.
-* _restFirstBeat_ controls whether a rest on beat 0 is allowed.
-* Most places a single value works? An array will cause a random choice.
+* _tonicPct_ works like _restPct_, specifying the likelihood we'll stick to the root within a given beat.
 * _loglevel_ requests increasing amount of debugging detail: currently **0**, **1**, **2**, or **3** are allowed. 0 means no debug info.
 
 ### MIDI Timing
