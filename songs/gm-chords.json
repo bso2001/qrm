@@ -1,0 +1,21 @@
+{
+	"type" : "chords",
+	"ppqn" : 480,
+	"outputDir" : "/Users/bert.olsson/Desktop",
+	"key" : { "tonic" : "G", "mode" : "minor" },
+	"meter" : { "numerator" : 4, "denominator" : 4 },
+	"nMeasures" : 32,
+	"tempo" : 100,
+	"loglevel" : 0,
+
+	"parts" : [
+		{
+			"file" : "gm-chords.mid",
+			"range" : [ "C3", "C5" ],
+			"velocity" : [ 70, 80 ],
+			"duration" : [ "1/4b", "1/2b", "1" ],
+			"chords" : [ "Gm", "F", "Dm", "Bbmaj7" ],
+			"restPct" : 0
+		}
+	]
+}

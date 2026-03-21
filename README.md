@@ -4,23 +4,29 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 **This is important!** Don't ever go down the rabbit hole of debugging with the "help" of an AI. Trust me.
 
-### JSON Input Description
+### JSON Input Description (a _song_)
 
+* We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
 * We know how to generate three things:
 	* Riffs based on the notes of a given key; and/or specific intervals in that key;
 	* Riffs based on the notes in a given sequence of chords
 	* A specific chord pattern in a given "range"
 * The _type_ parameter in the JSON input defines what will be generated; the values are **freeform**, **chordal**, and **chords**. NOTE: **chords** are still WIP.
-* _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the _internal_ JSON).
-* _scale_ is currently **major** or **minor**. Internally, this becomes the intervals of the given mode, and is used as a source of passing tones.
-* _passingNotes_ can be used to define a more limited set. These are specified as "classic intervals" – eg: **[ "II", "III", "bV", "#VI", "VII" ]**
-* We _assume_ the MIDI ticks/beat (PPQN) to be 480. Other values _should_ work.
+* _key.tonic_ is C-B; translated to 0-11 as _keyRoot_.
+* _key.mode_ is currently **major** or **minor**. Internally, this becomes the intervals of the given mode, and is used as a source of passing tones.
+* _loglevel_ requests increasing amount of debugging detail: currently **0** through **4** are used. 0 means no debug info and 4 is a lot.
+
+#### ... and parts is parts ...
+
+In addition to the above "common" parameters, songs consist mainly of one or more _parts_, stored in a JSON array of the same name. These are the properties of the parts:
+
+* _passingNotes_ can be used to define a more limited set. These are specified as "classic intervals" – eg: **[ "II", "III", "bV", "#VI", "VII" ]** relative to the _key_.
 * _duration_ is one or more of these values: [ **1**, **1/2**, **1/4**, **1/8**, **1/16**, **1/32**, **1/64** ]. These correspond, respectively, to the notes from Whole to Sixty-Fourth. 
 * Each duration value can have a single character suffix **a** - **z**. It specifies the weight of that duration entry; **a** = 1, **b** = 2, etc., defining increasing likelihood of the corrresponding length to be chosen.  For example, **"duration": [ "1/16b", "1/8d", "1/4d", "1/2b" ]** specifies events to have one of four note lengths, with Eigths and Quarters carrying twice the weight of sixteenths and halves.
 * _restPct_ can be a single value; more likely, an array is useful. Each array element is the probably of a rest during the corresponding beat. Thus, if meter denominator is **4**, there should be four array entries; eg: [ **0**, **0.25**, **0.25**, **0.1** ].
 * If we do rest based on _restPct_, the rest length is based on _duration_.
-* _tonicPct_ works like _restPct_, specifying the likelihood we'll stick to the root within a given beat.
-* _loglevel_ requests increasing amount of debugging detail: currently **0** through **4** are used. 0 means no debug info and 4 is a lot.
+* _tonicPct_ works like _restPct_, specifying the likelihood we'll stick to the root within a given beat. NOTE: if _type_ is **freeform** then the tonic is the root of the given _key_. Otherwise, it's the root of the "current chord."
+
 
 ### MIDI Timing
 

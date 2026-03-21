@@ -3,25 +3,41 @@
 //   Entry point
 //---------------------------------------------------------------------------------------
 
-const fsys = require("fs")
-const riff = require("./riff")
-const midi = require("./midi")
+const fsys   = require("fs")
+const midi   = require("./midi")
+const part   = require("./part")
+const theory = require("./theory")
 
 if ( require.main === module )
 {
 	const inputFile = process.argv[2]
+
 	if ( !inputFile )
 	{
 		console.error( "Usage: node main.js input.json" )
 		process.exit(1)
 	}
 
-	const json = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
-	const mldy = riff.generate( json )
+	const song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
 
-	if ( ! mldy || mldy.length === 0 )
-		throw new Error( "Error: no riff generated" )
+	song.keyRoot = song.key ? theory.keyToSemitone( song.key.tonic ) : 0
 
-	midi.writeEvents( mldy, json.ppqn, json.outputPath || "output.mid" )
+	for ( pJson of song.parts )
+	{
+		if ( !pJson.file )
+			console.error( "Error: no file for", pJson )
+		else
+		{
+			const pEvents = part.generate( song, pJson )
+
+			if ( ! pEvents || pEvents.length === 0 )
+				console.error( "Error: no events generated for", pJson )
+			else
+			{
+				const outputPath = (song.outputDir ? song.outputDir : '.') + '/' + pJson.file
+				midi.writeEvents( pEvents, song.ppqn, outputPath )
+			}
+		}
+	}
 }
 

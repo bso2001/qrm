@@ -53,25 +53,25 @@ function _degreeToSemitone( degreeStr, keyRoot )
 	return keyRoot + offset + accidental
 }
 
-function findIntervals( riff )
+function findIntervals( song, part )
 {
-	if ( riff.passingNotes && riff.passingNotes.length > 0 ) {
+	if ( part.passingNotes && part.passingNotes.length > 0 ) {
 		const pni = []
 
-		for ( pn of riff.passingNotes ) {
-			const nn = _degreeToSemitone( pn, riff.keyRoot )
+		for ( pn of part.passingNotes ) {
+			const nn = _degreeToSemitone( pn, song.keyRoot )
 			pni.push( nn )
 		}
 
 		return pni
 	}
 
-	if ( riff.mode === "minor" )
+	if ( song.key.mode === "minor" )
 		return MINOR
-	if ( riff.mode === "major" )
+	if ( song.key.mode === "major" )
 		return MAJOR
 
-	throw new Error( "Unsupported mode: " + riff.mode )
+	throw new Error( "Unsupported mode: " + song.key.mode )
 }
 
 function keyToSemitone( key )
