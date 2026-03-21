@@ -1,9 +1,9 @@
 {
 	"type": "chordal",
 	"nMeasures": 32,
-	"key": "C",
-	"mode": "major",
-	"tempo": 140,
+	"key": "E",
+	"mode": "minor",
+	"tempo": 100,
 
 	"meter": {
 		"numerator":   4,
@@ -17,7 +17,7 @@
 	"restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
 	"tonicPct": [ 0.99, 0.4, 0.4, 0.1 ],
 
-	"chords": [ "Cm7", "Am", "F", "G" ],
+	"chords": [ "Em", "Em", "C", "C" ],
 
 	"loglevel" : 0,
 	"ppqn": 480,

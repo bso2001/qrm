@@ -1,4 +1,4 @@
-## Create quasi-random Riffs from JSON Input
+## Creating quasi-random music from JSON Input
 
 This started as a AI generated project (GPT-5-something). We were able to quickly get an app skeleton built, as well as an "apparently working" first version. As AI was requested to add features, things broke.
 
@@ -6,6 +6,11 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 
 ### JSON Input Description
 
+* We know how to generate three things:
+	* Riffs based on the notes of a given key; and/or specific intervals in that key;
+	* Riffs based on the notes in a given sequence of chords
+	* A specific chord pattern in a given "range"
+* The _type_ parameter in the JSON input defines what will be generated; the values are **freeform**, **chordal**, and **chords**. NOTE: **chords** are still WIP.
 * _key_ is C-B; translated to 0-11 as _keyRoot_ (and placed into the _internal_ JSON).
 * _scale_ is currently **major** or **minor**. Internally, this becomes the intervals of the given mode, and is used as a source of passing tones.
 * _passingNotes_ can be used to define a more limited set. These are specified as "classic intervals" – eg: **[ "II", "III", "bV", "#VI", "VII" ]**
@@ -15,7 +20,7 @@ This started as a AI generated project (GPT-5-something). We were able to quickl
 * _restPct_ can be a single value; more likely, an array is useful. Each array element is the probably of a rest during the corresponding beat. Thus, if meter denominator is **4**, there should be four array entries; eg: [ **0**, **0.25**, **0.25**, **0.1** ].
 * If we do rest based on _restPct_, the rest length is based on _duration_.
 * _tonicPct_ works like _restPct_, specifying the likelihood we'll stick to the root within a given beat.
-* _loglevel_ requests increasing amount of debugging detail: currently **0**, **1**, **2**, or **3** are allowed. 0 means no debug info.
+* _loglevel_ requests increasing amount of debugging detail: currently **0** through **4** are used. 0 means no debug info and 4 is a lot.
 
 ### MIDI Timing
 

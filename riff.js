@@ -16,42 +16,40 @@ function generate( riff )
 
 	riff.events   = []
 	riff.prevRest = false
-	riff.measure  = 0
-	riff.thisBeat = 0
 	riff.lastTick = 0
 	riff.thisTick = 0
 
-	riff.keyRoot  = theory.keyToSemitone( riff.key )		// do this first!
+	riff.keyRoot  = theory.keyToSemitone( riff.key )		// do keyRoot first!
 	riff.intrvls  = theory.findIntervals( riff )
 	riff.timings  = theory.parseDuration( riff.duration )
 	riff.minMidi  = theory.parseNoteName( riff.range[0] )
 	riff.maxMidi  = theory.parseNoteName( riff.range[1] )
 
-	if ( riff.loglevel != 0 )
+	if ( riff.loglevel >= 1 )
 	{
 		console.log( '----------------------------------------------------------------------' )
 		console.log( 'riff spec =', util.inspect( riff, library.inspectOptions ))
 	}
 
-	for ( let measure = 0; measure < riff.nMeasures; measure++ )
+	for ( riff.measure = 0; riff.measure < riff.nMeasures; riff.measure++ )
 	{
 		riff.thisBeat = 0
 
-		if ( riff.loglevel > 1 )
+		if ( riff.loglevel >= 4 )
 		{
 			console.log( '----------------------------------------------------------------------' )
 			console.log( 'We are on Measure #', measure, '; lastTick =' , riff.lastTick )
 		}
 
-		for ( ; riff.thisBeat < riff.meter.numerator; riff.thisBeat++ )
+		for ( riff.thisBeat = 0; riff.thisBeat < riff.meter.numerator; riff.thisBeat++ )
 		{
 			riff.lastTick = (riff.thisTick + riff.ppqn)
-			if ( riff.loglevel > 1 )
+			if ( riff.loglevel >= 4 )
 				console.log( library.PAD4, 'Beat', riff.thisBeat, 'lastTick', riff.lastTick )
 
 			while ( riff.thisTick < riff.lastTick )
 			{
-				if ( riff.loglevel > 1 )
+				if ( riff.loglevel >= 4 )
 					console.log( library.PAD4, 'thisTick =', riff.thisTick, 'lastTick =', riff.lastTick )
 				beat.generate( riff )
 			}
@@ -92,7 +90,7 @@ function generate( riff )
 
 	evts.push({ delta: 0, type: "meta", meta_type: "end_of_track" })
 
-	if ( riff.loglevel != 0 )
+	if ( riff.loglevel >= 1 )
 	{
 		console.log( '-------------------------------------------------------------------------------------' )
 		console.log( 'events =', util.inspect( evts, false, null, true ))

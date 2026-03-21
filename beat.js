@@ -11,7 +11,7 @@ function _chordAt( riff )
 	if ( ! riff.chords || riff.chords.length === 0 )
 		throw new Error( "Bad chordal def: " + riff )
 
-	return theory.parseChordSymbol( riff.chords[riff.thisBeat] )
+	return theory.parseChordSymbol( riff.chords[riff.measure % riff.chords.length] )
 }
 
 function _tonic( riff )
@@ -33,6 +33,9 @@ function _chordalNote( riff )
 {
 	const chord  = _chordAt( riff )
 	const offset = _tonic( riff ) ? 0 : library.randomChoice( chord.notes )
+
+	if ( riff.loglevel >= 3 )
+		console.log( 'chord at m#', riff.measure, 'b#', riff.thisBeat, 'is', riff.chords[riff.thisBeat], 'offset =', chord.root + offset )
 
 	return chord.root + offset
 }
@@ -90,7 +93,7 @@ function generate( riff )
 	if ( resting )
 	{
 		riff.prevRest = true
-		if ( riff.loglevel == 3 )
+		if ( riff.loglevel >= 4 )
 			console.log( library.PAD8, 'resting on beat', riff.thisBeat, 'endTick =', endTick)
 	}
 	else

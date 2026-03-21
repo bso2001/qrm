@@ -1,0 +1,21 @@
+{
+	"type": "chords",
+	"nMeasures": 32,
+	"tempo": 100,
+
+	"meter": {
+		"numerator":   4,
+		"denominator": 4
+	},
+
+	"range": [ "C3", "C5" ],
+	"velocity": [ 70, 80 ],
+	"duration": [ "1/4b", "1/2b", "1" ],
+
+	"restPct" : 0,
+	"chords": [ "Em", "Em", "C", "C" ],
+
+	"loglevel" : 3,
+	"ppqn": 480,
+	"outputPath": "/Users/bert.olsson/Desktop/chords.mid"
+}
