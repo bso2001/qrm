@@ -58,7 +58,19 @@ function _freeformNote( part )
 
 function _fullChord( part )
 {
-	return []
+	const chord  = _chordAt( part )
+	const nNotes = 3		// make this a param
+	const notes  = []
+
+	if ( nNotes > chord.notes.length )
+		nNotes = chord.notes.length
+
+	for ( let i = 0; i < nNotes; i++ ) {
+		const semitn = chord.root + chord.notes[i]
+		notes.push( _clampToRange( semitn, part ))
+	}
+
+	return notes
 }
 
 function generate( song, part ) 
