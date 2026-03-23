@@ -8,7 +8,7 @@ const theory  = require("./theory")
 
 function _chordAt( part )
 {
-	if ( ! part.chords || part.chords.length === 0 )
+	if ( ! part.chords || part.chords.length == 0 )
 		throw new Error( "Bad chordal def: " + part )
 
 	return theory.parseChordSymbol( part.chords[part.measure % part.chords.length] )
@@ -29,24 +29,6 @@ function _tonic( part )
 	return tonic
 }
 
-function _chordalNote( part )
-{
-	const chord  = _chordAt( part )
-	const offset = _tonic( part ) ? 0 : library.randomChoice( chord.notes )
-
-	return chord.root + offset
-}
-
-function _freeformNote( song, part )
-{
-	let offset = 0
-	
-	if ( ! _tonic( part ))
-		offset = library.randomChoice( part.intrvls )
-
-	return song.keyRoot + offset
-}
-
 function _clampToRange( mNote, part )
 {
 	while ( mNote < part.minMidi )
@@ -57,6 +39,28 @@ function _clampToRange( mNote, part )
 	return mNote
 }
 
+function _chordalNote( part )
+{
+	const chord  = _chordAt( part )
+	const offset = _tonic( part ) ? 0 : library.randomChoice( chord.notes )
+	const semitn =  chord.root + offset
+
+	return [ _clampToRange( semitn, part ) ]
+}
+
+function _freeformNote( part )
+{
+	const offset = _tonic( part ) ? 0 : library.randomChoice( part.intrvls )
+	const semitn = part.keyRoot + offset
+
+	return [ _clampToRange( semitn, part ) ]
+}
+
+function _fullChord( part )
+{
+	return []
+}
+
 function generate( song, part ) 
 {
 					// determine event (note or rest) duration in ticks. tdiv is the "PPQN divisor"
@@ -64,7 +68,7 @@ function generate( song, part )
 					// eighth note is 2; 480/2 = 240: the # of ticks for a quaver
 
 	const tdiv  = library.randomChoice( part.timings )
-	let endTick = part.thisTick + (part.ppqn / tdiv)
+	let endTick = part.thisTick + (song.ppqn / tdiv)
 
 	if ( endTick > part.lastTick )
 		endTick = part.lastTick
@@ -95,20 +99,27 @@ function generate( song, part )
 	}
 	else
 	{
-		let semitone
+		let notes = []
 
 		part.prevRest = false
 
-		if ( part.type === "chordal" )
-			semitone = _chordalNote( part )
-		else
-			semitone = _freeformNote( song, part )
+		if ( part.type == "chordal" )
+			notes = _chordalNote( part )
 
-		const midiNote = _clampToRange( semitone, part )
-		const velocity = library.randomInRange( part.velocity )
+		if ( part.type == "freeform" )
+			notes = _freeformNote( part )
 
-		part.events.push( library.noteOn(  part.thisTick, midiNote, velocity ))
-		part.events.push( library.noteOff( endTick, midiNote ))
+		if ( part.type == "chords" )
+			notes = _fullChord( part )
+
+		if ( notes.length == 0 )
+			throw new Error( "Bad part type? " + part.type )
+
+		for ( let midiNote of notes ) {
+			part.events.push( library.noteOn( part.thisTick, midiNote,
+												library.randomInRange( part.velocity )))
+			part.events.push( library.noteOff( endTick, midiNote ))
+		}
 	}
 
 	part.thisTick = endTick

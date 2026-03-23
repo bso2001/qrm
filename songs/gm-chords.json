@@ -1,6 +1,4 @@
 {
-	"type" : "chords",
-	"ppqn" : 480,
 	"outputDir" : "/Users/bert.olsson/Desktop",
 	"key" : { "tonic" : "G", "mode" : "minor" },
 	"meter" : { "numerator" : 4, "denominator" : 4 },
@@ -10,6 +8,7 @@
 
 	"parts" : [
 		{
+			"type" : "chords",
 			"file" : "gm-chords.mid",
 			"range" : [ "C3", "C5" ],
 			"velocity" : [ 70, 80 ],

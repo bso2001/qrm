@@ -34,7 +34,7 @@ function generate( song, part )
 		if ( song.loglevel >= 4 )
 		{
 			console.log( '----------------------------------------------------------------------' )
-			console.log( 'We are on Measure #', measure, '; lastTick =' , part.lastTick )
+			console.log( 'We are on Measure #', part.measure, '; lastTick =' , part.lastTick )
 		}
 
 		for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )

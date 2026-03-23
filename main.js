@@ -19,8 +19,10 @@ if ( require.main === module )
 	}
 
 	const song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
+	const root = song.key ? theory.keyToSemitone( song.key.tonic ) : 0
 
-	song.keyRoot = song.key ? theory.keyToSemitone( song.key.tonic ) : 0
+	if ( !song.ppqn || song.ppqn === "undefined" )
+		song.ppqn = 480
 
 	for ( pJson of song.parts )
 	{
@@ -28,6 +30,8 @@ if ( require.main === module )
 			console.error( "Error: no file for", pJson )
 		else
 		{
+			pJson.keyRoot = root
+
 			const pEvents = part.generate( song, pJson )
 
 			if ( ! pEvents || pEvents.length === 0 )
