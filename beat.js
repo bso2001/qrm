@@ -105,7 +105,7 @@ function generate( song, part )
 			semitone = _freeformNote( song, part )
 
 		const midiNote = _clampToRange( semitone, part )
-		const velocity = library.parseValue( part.velocity )
+		const velocity = library.randomInRange( part.velocity )
 
 		part.events.push( library.noteOn(  part.thisTick, midiNote, velocity ))
 		part.events.push( library.noteOff( endTick, midiNote ))
