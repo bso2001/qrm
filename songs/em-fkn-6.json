@@ -6,6 +6,8 @@
 	"tempo" : 100,
 	"loglevel" : 3,
 
+	"chords" : [ "Em", "Em", "C", "C" ],
+
 	"parts" : [
 		{
 			"type" : "chordal",
@@ -15,9 +17,7 @@
 			"duration" : [ "1/8c", "1/4b", "1/2a" ],
 
 			"restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
-			"tonicPct" : [ 0.99, 0.4, 0.4, 0.1 ],
-
-			"chords" : [ "Em", "Em", "C", "C" ]
+			"tonicPct" : [ 0.99, 0.4, 0.4, 0.1 ]
 		}
 	]
 }

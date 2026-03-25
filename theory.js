@@ -94,6 +94,7 @@ function parseChordSymbol( sym )
 		overBass = NOTE_BASES[bass]
 	}
 
+
 	const m = sym.match(/^([A-G][b#]?)(.*)$/)
 	if ( !m )
 		throw new Error( "Bad chord: " + sym )
@@ -125,10 +126,13 @@ function parseChordSymbol( sym )
 		"m13": [0, 3, 7, 10, 14, 17, 21]
 	}
 
-	return {
+	const chord =
+	{
 		notes: chordIntervals[qual] || chordIntervals[""],
 		root : root
 	}
+
+	return chord
 }
 	
 	// "duration": [ "1/16c", "1/8d", "1/4b", "1/2a" ]

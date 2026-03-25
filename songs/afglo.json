@@ -4,16 +4,27 @@
 	"meter" : { "numerator" : 4, "denominator" : 4 },
 	"nMeasures" : 32,
 	"tempo" : 60,
-	"loglevel" : 3,
+	"loglevel" : 4,
+
+	"chords" : [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
 
 	"parts" : [
+		{
+			"type" : "chordal",
+			"file" : "afglo-bass.mid",
+			"range" : [ "E1", "E3" ],
+			"velocity" : [ 70, 80 ],
+			"duration" : [ "1/4c", "1/2a" ],
+
+			"restPct" : [ 0.0, 0.3, 0.3, 0.0 ],
+			"tonicPct" : [ 0.99, 0.98, 0.40, 0.10 ]
+		},
 		{
 			"type" : "chords",
 			"file" : "afglo-chords.mid",
 			"range" : [ "C3", "C5" ],
 			"velocity" : [ 70, 80 ],
 			"duration" : "1/2",
-			"chords" : [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
 			"restPct" : 0
 		}
 	]

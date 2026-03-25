@@ -33,6 +33,8 @@ function generate( song, part )
 		part.thisBeat = 0
 		part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
 
+		part.chords = song.chords	// for now...
+
 		if ( song.loglevel >= 4 )
 		{
 			console.log( '----------------------------------------------------------------------' )

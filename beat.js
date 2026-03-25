@@ -62,10 +62,10 @@ function _freeformNote( part )
 function _fullChord( part )
 {
 	const chord  = _chordAt( part )
-	const nNotes = 3		// make this a param
 	const notes  = []
+	let nNotes = 3		// make this a param?
 
-	if ( nNotes > chord.notes.length )
+	// if ( nNotes > chord.notes.length )
 		nNotes = chord.notes.length
 
 	for ( let i = 0; i < nNotes; i++ ) {
@@ -138,7 +138,7 @@ function generate( song, part )
 			throw new Error( "Bad part type? " + part.type )
 
 		if ( song.loglevel >= 4 )
-			console.log( library.PAD8, notes.length, 'note(s) on beat', part.thisBeat, 'endTick =', endTick)
+			console.log( library.PAD8, notes, 'on beat', part.thisBeat, 'endTick =', endTick)
 
 		for ( let midiNote of notes ) {
 			part.events.push( library.noteOn( part.thisTick, midiNote,
