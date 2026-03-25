@@ -10,15 +10,16 @@ const util    = require("node:util")
 
 function generate( song, part )
 {
-	part.events   = []
-	part.prevRest = false
-	part.lastTick = 0
-	part.thisTick = 0
+	part.events     = []
+	part.lastTick   = 0
+	part.thisTick   = 0
+	part.chordIndex = 0
+	part.prevRest   = false
 
-	part.intrvls  = theory.findIntervals( song, part )
-	part.timings  = theory.parseDuration( part.duration )
-	part.minMidi  = theory.parseNoteName( part.range[0] )
-	part.maxMidi  = theory.parseNoteName( part.range[1] )
+	part.intrvls    = theory.findIntervals( song, part )
+	part.timings    = theory.parseDuration( part.duration )
+	part.minMidi    = theory.parseNoteName( part.range[0] )
+	part.maxMidi    = theory.parseNoteName( part.range[1] )
 
 	if ( song.loglevel >= 1 )
 	{
@@ -30,6 +31,7 @@ function generate( song, part )
 	for ( part.measure = 0; part.measure < song.nMeasures; part.measure++ )
 	{
 		part.thisBeat = 0
+		part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
 
 		if ( song.loglevel >= 4 )
 		{
@@ -39,7 +41,6 @@ function generate( song, part )
 
 		for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )
 		{
-			part.lastTick = (part.thisTick + song.ppqn)
 			if ( song.loglevel >= 4 )
 				console.log( library.PAD4, 'Beat', part.thisBeat, 'lastTick', part.lastTick )
 

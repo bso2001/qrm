@@ -1,0 +1,20 @@
+{
+	"outputDir" : "/Users/bert.olsson/Desktop",
+	"key" : { "tonic" : "D", "mode" : "major" },
+	"meter" : { "numerator" : 4, "denominator" : 4 },
+	"nMeasures" : 32,
+	"tempo" : 60,
+	"loglevel" : 3,
+
+	"parts" : [
+		{
+			"type" : "chords",
+			"file" : "afglo-chords.mid",
+			"range" : [ "C3", "C5" ],
+			"velocity" : [ 70, 80 ],
+			"duration" : "1/2",
+			"chords" : [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
+			"restPct" : 0
+		}
+	]
+}

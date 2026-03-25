@@ -11,7 +11,10 @@ function _chordAt( part )
 	if ( ! part.chords || part.chords.length == 0 )
 		throw new Error( "Bad chordal def: " + part )
 
-	return theory.parseChordSymbol( part.chords[part.measure % part.chords.length] )
+	if ( part.chordIndex >= part.chords.length )
+		part.chordIndex = 0
+
+	return theory.parseChordSymbol( part.chords[ part.chordIndex++ ])
 }
 
 function _tonic( part )
@@ -82,8 +85,15 @@ function generate( song, part )
 	const tdiv  = library.randomChoice( part.timings )
 	let endTick = part.thisTick + (song.ppqn / tdiv)
 
-	if ( endTick > part.lastTick )
+	if ( song.loglevel >= 3 )
+		console.log( library.PAD4, 'thisTick', part.thisTick, 'tdiv', tdiv, 'lastTick', part.lastTick, 'endTick', endTick )
+
+	if ( endTick > part.lastTick ) {
+		if ( song.loglevel >= 3 )
+			console.log( library.PAD4, 'endTick ran over part end!' )
 		endTick = part.lastTick
+	}
+
 
 					// see if we're taking a breather; we don't rest twice in a row; that should
 					// be a param! restPct can be a single value, or a value per beat
@@ -126,6 +136,9 @@ function generate( song, part )
 
 		if ( notes.length == 0 )
 			throw new Error( "Bad part type? " + part.type )
+
+		if ( song.loglevel >= 4 )
+			console.log( library.PAD8, notes.length, 'note(s) on beat', part.thisBeat, 'endTick =', endTick)
 
 		for ( let midiNote of notes ) {
 			part.events.push( library.noteOn( part.thisTick, midiNote,

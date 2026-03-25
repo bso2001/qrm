@@ -146,6 +146,9 @@ function parseDuration( nd )
 		"1/64" : 16
 	}
 
+	if ( !Array.isArray(nd) )
+		nd = [nd]
+
 	const timings = []
 
 	for ( dspec of nd )
@@ -165,8 +168,8 @@ function parseDuration( nd )
 			nlen = dslen - 1
 		}
 
-		const note = dspec.substring( 0, nlen )
-		const dval = ndDivisors[ note ]
+		const durv = dspec.substring( 0, nlen )
+		const dval = ndDivisors[ durv ]
 
 		if ( !dval || dval === "undefined" )
 			continue
