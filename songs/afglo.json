@@ -25,6 +25,7 @@
 			"range" : [ "C3", "C5" ],
 			"velocity" : [ 70, 80 ],
 			"duration" : "1/2",
+			"inversionPct" : 0.5,
 			"restPct" : 0
 		}
 	]
