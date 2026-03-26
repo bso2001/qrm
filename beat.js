@@ -94,10 +94,8 @@ function generate( song, part )
 		endTick = part.lastTick
 	}
 
-
 					// see if we're taking a breather; we don't rest twice in a row; that should
 					// be a param! restPct can be a single value, or a value per beat
-
 	let resting = true
 
 	if ( part.prevRest == false )

@@ -14,10 +14,10 @@
 			"file" : "afglo-bass.mid",
 			"range" : [ "E1", "E3" ],
 			"velocity" : [ 70, 80 ],
-			"duration" : [ "1/4c", "1/2a" ],
+			"duration" : [ "1/2a" ],
 
-			"restPct" : [ 0.0, 0.3, 0.3, 0.0 ],
-			"tonicPct" : [ 0.99, 0.98, 0.40, 0.10 ]
+			"restPct" : 0,
+			"tonicPct" : 1
 		},
 		{
 			"type" : "chords",
