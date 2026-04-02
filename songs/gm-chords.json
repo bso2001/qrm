@@ -1,20 +1,18 @@
 {
-	"outputDir" : "/Users/bert.olsson/Desktop",
-	"key" : { "tonic" : "G", "mode" : "minor" },
-	"meter" : { "numerator" : 4, "denominator" : 4 },
-	"nMeasures" : 32,
-	"tempo" : 80,
-	"loglevel" : 0,
+  "outputDir" : "/Users/bert.olsson/Desktop",
+  "key" : { "tonic" : "G", "mode" : "minor" },
+  "meter" : { "numerator" : 4, "denominator" : 4 },
+  "nMeasures" : 32,
+  "tempo" : 80,
+  "loglevel" : 0,
 
-	"parts" : [
-		{
-			"type" : "chords",
-			"file" : "gm-chords.mid",
-			"range" : [ "C3", "C5" ],
-			"velocity" : [ 70, 80 ],
-			"duration" : [ "1/4b", "1/2b", "1" ],
-			"chords" : [ "Gm", "F", "Dm", "C" ],
-			"restPct" : 0
-		}
-	]
+  "parts" : [{
+    "file" : "gm-chords.mid",
+    "type" : "chords",
+    "chords" : [ "Gm", "F", "Dm", "C" ],
+    "range" : [ "C3", "C5" ],
+    "velocity" : [ 70, 80 ],
+    "duration" : [ "1/4b", "1/2b", "1" ],
+    "restPct" : 0
+  }]
 }
