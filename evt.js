@@ -3,8 +3,8 @@
 //   Beat generation: fill the current beat for the supplied `part`
 //-----------------------------------------------------------------------------
 
-const library = require("./lib")
-const theory  = require("./theory")
+const common = require("./common")
+const theory = require("./theory")
 
 function _chordAt( part )
 {
@@ -23,10 +23,10 @@ function _tonic( part )
 
 	if ( Array.isArray( part.tonicPct ))
 	{
-		if ( ! library.probabilityHit( part.tonicPct [ part.thisBeat ] ))
+		if ( ! common.probabilityHit( part.tonicPct [ part.thisBeat ] ))
 			tonic = false
 	}
-	else if ( ! library.probabilityHit( part.tonicPct ))
+	else if ( ! common.probabilityHit( part.tonicPct ))
 			tonic = false
 
 	return tonic
@@ -45,7 +45,7 @@ function _clampToRange( mNote, part )
 function _chordalNote( part )
 {
 	const chord  = _chordAt( part )
-	const offset = _tonic( part ) ? 0 : library.randomChoice( chord.notes )
+	const offset = _tonic( part ) ? 0 : common.randomChoice( chord.notes )
 	const semitn =  chord.root + offset
 
 	return [ _clampToRange( semitn, part ) ]
@@ -53,7 +53,7 @@ function _chordalNote( part )
 
 function _freeformNote( part )
 {
-	const offset = _tonic( part ) ? 0 : library.randomChoice( part.intrvls )
+	const offset = _tonic( part ) ? 0 : common.randomChoice( part.intrvls )
 	const semitn = part.keyRoot + offset
 
 	return [ _clampToRange( semitn, part ) ]
@@ -82,15 +82,15 @@ function generate( song, part )
 					// that yields the # of ticks for a given note length. eg; the tdiv for an
 					// eighth note is 2; 480/2 = 240: the # of ticks for a quaver
 
-	const tdiv  = library.randomChoice( part.timings )
+	const tdiv  = common.randomChoice( part.timings )
 	let endTick = part.thisTick + (song.ppqn / tdiv)
 
 	if ( song.loglevel >= 3 )
-		console.log( library.PAD4, 'thisTick', part.thisTick, 'tdiv', tdiv, 'lastTick', part.lastTick, 'endTick', endTick )
+		console.log( common.PAD4, 'thisTick', part.thisTick, 'tdiv', tdiv, 'lastTick', part.lastTick, 'endTick', endTick )
 
 	if ( endTick > part.lastTick ) {
 		if ( song.loglevel >= 3 )
-			console.log( library.PAD4, 'endTick ran over part end!' )
+			console.log( common.PAD4, 'endTick ran over part end!' )
 		endTick = part.lastTick
 	}
 
@@ -104,10 +104,10 @@ function generate( song, part )
 	if ( resting )
 	{
 		if ( Array.isArray(part.restPct) ) {
-			if ( ! library.probabilityHit( part.restPct [ part.thisBeat ] ))
+			if ( ! common.probabilityHit( part.restPct [ part.thisBeat ] ))
 				resting = false
 		}
-		else if ( ! library.probabilityHit( part.restPct ))
+		else if ( ! common.probabilityHit( part.restPct ))
 			resting = false
 	}
 
@@ -115,7 +115,7 @@ function generate( song, part )
 	{
 		part.prevRest = true
 		if ( song.loglevel >= 4 )
-			console.log( library.PAD8, 'resting on beat', part.thisBeat, 'endTick =', endTick)
+			console.log( common.PAD8, 'resting on beat', part.thisBeat, 'endTick =', endTick)
 	}
 	else
 	{
@@ -136,12 +136,12 @@ function generate( song, part )
 			throw new Error( "Bad part type? " + part.type )
 
 		if ( song.loglevel >= 4 )
-			console.log( library.PAD8, notes, 'on beat', part.thisBeat, 'endTick =', endTick)
+			console.log( common.PAD8, notes, 'on beat', part.thisBeat, 'endTick =', endTick)
 
 		for ( let midiNote of notes ) {
-			part.events.push( library.noteOn( part.thisTick, midiNote,
-												library.randomInRange( part.velocity )))
-			part.events.push( library.noteOff( endTick, midiNote ))
+			part.events.push( common.noteOn( part.thisTick, midiNote,
+												common.randomInRange( part.velocity )))
+			part.events.push( common.noteOff( endTick, midiNote ))
 		}
 	}
 

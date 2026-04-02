@@ -3,54 +3,59 @@
 //  Part generation
 //-------------------------------------------------------------------
 
-const beat    = require("./beat")
-const library = require("./lib")
-const theory  = require("./theory")
-const util    = require("node:util")
+const evt    = require("./evt")
+const common = require("./common")
+const theory = require("./theory")
+const util   = require("node:util")
 
-function generate( song, part )
+function generate( pJson )
 {
-	part.events     = []
-	part.lastTick   = 0
-	part.thisTick   = 0
-	part.chordIndex = 0
-	part.prevRest   = false
+	common.part = pJson
 
-	part.intrvls    = theory.findIntervals( song, part )
-	part.timings    = theory.parseDuration( part.duration )
-	part.minMidi    = theory.parseNoteName( part.range[0] )
-	part.maxMidi    = theory.parseNoteName( part.range[1] )
+	common.part.events     = []
+	common.part.lastTick   = 0
+	common.part.thisTick   = 0
+	common.part.chordIndex = 0
+	common.part.prevRest   = false
 
-	if ( song.loglevel >= 1 )
+	common.part.intrvls    = theory.findIntervals( song, pJson )
+	common.part.timings    = theory.parseDuration( pJson.duration )
+	common.part.minMidi    = theory.parseNoteName( pJson.range[0] )
+	common.part.maxMidi    = theory.parseNoteName( pJson.range[1] )
+
+	if ( common.song.loglevel >= 1 )
 	{
 		console.log( '----------------------------------------------------------------------' )
-		console.log( 'song spec =', util.inspect( song, library.inspectOptions ))
-		console.log( 'part spec =', util.inspect( part, library.inspectOptions ))
+		console.log( 'common.song spec =', util.inspect( common.song, common.inspectOptions ))
+		console.log( 'common.part spec =', util.inspect( common.part, common.inspectOptions ))
 	}
 
-	for ( part.measure = 0; part.measure < song.nMeasures; part.measure++ )
+	for ( m = 0; m < song.nMeasures; m++ )
 	{
-		part.thisBeat = 0
-		part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
+		common.voice = {}
 
-		part.chords = song.chords	// for now...
+		common.part.thisBeat = 0
+		common.part.measure  = m
+		common.part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
+
+		common.part.chords = common.song.chords	// for now...
 
 		if ( song.loglevel >= 4 )
 		{
 			console.log( '----------------------------------------------------------------------' )
-			console.log( 'We are on Measure #', part.measure, '; lastTick =' , part.lastTick )
+			console.log( 'We are on measure #', common.part.measure, '; lastTick =' , common.part.lastTick )
 		}
 
 		for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )
 		{
 			if ( song.loglevel >= 4 )
-				console.log( library.PAD4, 'Beat', part.thisBeat, 'lastTick', part.lastTick )
+				console.log( common.PAD4, 'Beat', part.thisBeat, 'lastTick', part.lastTick )
 
 			while ( part.thisTick < part.lastTick )
 			{
 				if ( song.loglevel >= 4 )
-					console.log( library.PAD4, 'thisTick =', part.thisTick, 'lastTick =', part.lastTick )
-				beat.generate( song, part )
+					console.log( common.PAD4, 'thisTick =', part.thisTick, 'lastTick =', part.lastTick )
+				evt.generate( song, part )
 			}
 		}
 	}

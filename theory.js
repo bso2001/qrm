@@ -3,7 +3,7 @@
 //   Theory helpers
 //-------------------------------------------------------------------
 
-const library = require("./lib")
+const common = require("./common")
 
 const NOTE_BASES =
 {
@@ -160,7 +160,7 @@ function parseDuration( nd )
 		const lastchar = dspec.charAt( dslen-1 )
 		let   multiplier, nlen
 
-		if ( ! library.isAlpha( lastchar ))
+		if ( ! common.isAlpha( lastchar ))
 		{
 			multiplier = 1
 			nlen = dslen

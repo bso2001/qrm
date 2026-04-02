@@ -4,6 +4,7 @@
 //-------------------------------------------------------------------
 
 const fsys   = require("fs")
+const common = require("./common")
 const midi   = require("./midi")
 const part   = require("./part")
 const theory = require("./theory")
@@ -18,30 +19,21 @@ if ( require.main === module )
 		process.exit(1)
 	}
 
-	const song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
-	const root = song.key ? theory.keyToSemitone( song.key.tonic ) : 0
+	common.song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
+	common.song.keyRoot = common.song.key ? theory.keyToSemitone( common.song.key.tonic ) : 0
 
-	if ( !song.ppqn || song.ppqn === "undefined" )
-		song.ppqn = 480
+	if ( !common.song.ppqn || common.song.ppqn === "undefined" )
+		common.song.ppqn = 480
 
-	for ( pJson of song.parts )
+	for ( p of common.song.parts )
 	{
-		if ( !pJson.file )
-			console.error( "Error: no file for", pJson )
+		const pEvents = part.generate( p )
+
+		if ( ! pEvents || pEvents.length === 0 )
+			console.error( "Error: no events generated for", p )
 		else
-		{
-			pJson.keyRoot = root
-
-			const pEvents = part.generate( song, pJson )
-
-			if ( ! pEvents || pEvents.length === 0 )
-				console.error( "Error: no events generated for", pJson )
-			else
-			{
-				const outputPath = (song.outputDir ? song.outputDir : '.') + '/' + pJson.file
-				midi.writeEvents( pEvents, song.ppqn, outputPath )
-			}
-		}
+			midi.writeEvents( pEvents, common.song.ppqn, 
+					(common.song.outputDir ? song.outputDir : '.') + '/' + p.file )
 	}
 }
 

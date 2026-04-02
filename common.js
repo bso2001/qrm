@@ -1,4 +1,20 @@
 
+const PAD2 = '  '
+const PAD4 = (PAD2 + PAD2)
+const PAD8 = (PAD4 + PAD4)
+
+const inspectOptions =
+{
+	showHidden : false,
+	depth :		 null,
+	colors :	 true,
+	maxArrayLength : null
+}
+
+let song  = {}		// the current states of everything
+let part  = {}
+let voice = {}
+
 function isAlpha( ch )
 {
 	return /^[A-Z]$/i.test( ch )
@@ -49,17 +65,9 @@ function randomInRange( [lo, hi] )
 	return Math.floor( Math.random() * (hi - lo + 1) ) + lo
 }
 
-const PAD2 = '  '
-const PAD4 = (PAD2 + PAD2)
-const PAD8 = (PAD4 + PAD4)
-
-const inspectOptions =
+module.exports =
 {
-	showHidden : false,
-	depth :		 null,
-	colors :	 true,
-	maxArrayLength : null
+	PAD4, PAD8, inspectOptions, part, voice, isAlpha, noteOff, noteOn,
+	parseValue, probabilityHit, randomChoice, randomInRange
 }
-
-module.exports = { isAlpha, noteOff, noteOn, parseValue, probabilityHit, randomChoice, randomInRange, PAD4, PAD8, inspectOptions }
 

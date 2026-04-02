@@ -10,10 +10,12 @@
     "file" : "flat6-bass.mid",
     "type" : "chordal",
     "chords" : [ "Am", "Am", "G", "F" ],
-    "range" : [ "E1", "E3" ],
-    "velocity" : [ 70, 80 ],
-	"duration" : [ "1/8c", "1/4b", "1/2a" ],
-    "restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
-    "tonicPct" : [ 0.99, 0.4, 0.4, 0.1 ]
+	"voices" : [{
+      "range" : [ "E1", "E3" ],
+      "velocity" : [ 70, 80 ],
+	  "duration" : [ "1/8c", "1/4b", "1/2a" ],
+      "restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
+      "tonicPct" : [ 0.99, 0.4, 0.4, 0.1 ]
+    }]
   }]
 }

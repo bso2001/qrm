@@ -1,62 +1,58 @@
 {
-  "name" : "Afterglowish",
+  "name"      : "Afterglowish",
   "outputDir" : "/Users/bert.olsson/Desktop/ag",
-  "tempo" : 60,
-  "loglevel" : 0,
+  "tempo"     : 60,
+  "loglevel"  : 0,
 
-  "parts" : [
-    {
-      "name" : "intro",
-      "key" : { "tonic" : "G", "mode" : "major" },
-      "meter" : { "numerator" : 4, "denominator" : 4 },
+  "parts" : [{
+      "name"      : "intro",
+      "key"       : { "tonic" : "G", "mode" : "major" },
+      "meter"     : { "numerator" : 4, "denominator" : 4 },
       "nMeasures" : 1,
-      "chords" : [ "G", "Gmaj7", "G", "Gmaj7", "G", "C", "A" ],
-      "duration" : "1/2",
-      "velocity" : [ 70, 80 ],
+      "chords"    : [ "G", "Gmaj7", "G", "Gmaj7", "G", "C", "A" ],
+      "velocity"  : [ 70, 80 ],
+      "duration"  : "1/2",
 
-      "voices" :
-      [
+      "voices" : [
         {
-          "file" : "afglo-bass-1.mid",
-          "type" : "chordal",
-          "range" : [ "E1", "E3" ],
-          "restPct" : 0,
+          "file"     : "afglo-bass-1.mid",
+          "type"     : "chordal",
+          "range"    : [ "E1", "E3" ],
+          "restPct"  : 0,
           "tonicPct" : 0.75
         },
         {
-          "file" : "afglo-chords-1.mid",
-          "type" : "chords",
-          "range" : [ "C3", "C5" ],
-          "inversionPct" : 0.5,
-          "restPct" : 0
+          "file"         : "afglo-chords-1.mid",
+          "type"         : "chords",
+          "inversionPct" : 0.25,
+          "range"        : [ "C3", "C5" ],
+          "restPct"      : 0
         }
       ]
     },
     {
-      "name" : "outro",
-      "key" : { "tonic" : "D", "mode" : "major" },
-      "meter" : { "numerator" : 4, "denominator" : 4 },
+      "name"      : "outro",
+      "key"       : { "tonic" : "D", "mode" : "major" },
+      "meter"     : { "numerator" : 4, "denominator" : 4 },
       "nMeasures" : 32,
-      "chords" : [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
-      "duration" : "1/2",
+      "chords"    : [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
+      "velocity"  : [ 80, 90 ],
+      "duration"  : "1/2",
 
-      "voices" :
-      [
+      "voices" : [
         {
-          "file" : "afglo-bass-2.mid",
-          "type" : "chordal",
-          "range" : [ "E1", "E3" ],
-          "velocity" : [ 80, 90 ],
-          "restPct" : 0,
+          "file"     : "afglo-bass-2.mid",
+          "type"     : "chordal",
+          "range"    : [ "E1", "E3" ],
+          "restPct"  : 0,
           "tonicPct" : 0.75
         },
         {
-          "file" : "afglo-chords-2.mid",
-          "type" : "chords",
-          "range" : [ "C3", "C5" ],
-          "velocity" : [ 80, 90 ],
+          "file"         : "afglo-chords-2.mid",
+          "type"         : "chords",
           "inversionPct" : 0.5,
-          "restPct" : 0
+          "range"        : [ "C3", "C5" ],
+          "restPct"      : 0
         }
       ]
     }
