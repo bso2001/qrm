@@ -85,11 +85,11 @@ function generate( song, part )
 	const tdiv  = common.randomChoice( part.timings )
 	let endTick = part.thisTick + (song.ppqn / tdiv)
 
-	if ( song.loglevel >= 3 )
+	if ( song.loglevel >= 2 )
 		console.log( common.PAD4, 'thisTick', part.thisTick, 'tdiv', tdiv, 'lastTick', part.lastTick, 'endTick', endTick )
 
 	if ( endTick > part.lastTick ) {
-		if ( song.loglevel >= 3 )
+		if ( song.loglevel >= 2 )
 			console.log( common.PAD4, 'endTick ran over part end!' )
 		endTick = part.lastTick
 	}
@@ -114,7 +114,7 @@ function generate( song, part )
 	if ( resting )
 	{
 		part.prevRest = true
-		if ( song.loglevel >= 4 )
+		if ( song.loglevel >= 3 )
 			console.log( common.PAD8, 'resting on beat', part.thisBeat, 'endTick =', endTick)
 	}
 	else
@@ -135,7 +135,7 @@ function generate( song, part )
 		if ( notes.length == 0 )
 			throw new Error( "Bad part type? " + part.type )
 
-		if ( song.loglevel >= 4 )
+		if ( song.loglevel >= 3 )
 			console.log( common.PAD8, notes, 'on beat', part.thisBeat, 'endTick =', endTick)
 
 		for ( let midiNote of notes ) {

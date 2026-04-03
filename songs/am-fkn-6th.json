@@ -1,4 +1,5 @@
 {
+  "name"      : "Freakin' Flat 6th",
   "outputDir" : "/Users/bert.olsson/Desktop",
   "key" : { "tonic" : "A", "mode" : "minor" },
   "meter" : { "numerator" : 4, "denominator" : 4 },

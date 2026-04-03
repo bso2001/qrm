@@ -1,4 +1,5 @@
 {
+  "name" : "Gm Chords",
   "outputDir" : "/Users/bert.olsson/Desktop",
   "key" : { "tonic" : "G", "mode" : "minor" },
   "meter" : { "numerator" : 4, "denominator" : 4 },

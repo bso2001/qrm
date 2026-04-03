@@ -40,7 +40,7 @@ function generate( pJson )
 
 		common.part.chords = common.song.chords	// for now...
 
-		if ( song.loglevel >= 4 )
+		if ( song.loglevel >= 3 )
 		{
 			console.log( '----------------------------------------------------------------------' )
 			console.log( 'We are on measure #', common.part.measure, '; lastTick =' , common.part.lastTick )
@@ -48,12 +48,12 @@ function generate( pJson )
 
 		for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )
 		{
-			if ( song.loglevel >= 4 )
+			if ( song.loglevel >= 3 )
 				console.log( common.PAD4, 'Beat', part.thisBeat, 'lastTick', part.lastTick )
 
 			while ( part.thisTick < part.lastTick )
 			{
-				if ( song.loglevel >= 4 )
+				if ( song.loglevel >= 3 )
 					console.log( common.PAD4, 'thisTick =', part.thisTick, 'lastTick =', part.lastTick )
 				evt.generate( song, part )
 			}
