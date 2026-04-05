@@ -1,0 +1,36 @@
+#!/bin/bash
+# qrm.watch - Simple watcher for QRM spool
+
+SPOOL_DIR="./spool"
+
+if [ ! -d "$SPOOL_DIR" ]; then
+    echo "Error: $SPOOL_DIR does not exist."
+    exit 1
+fi
+
+echo "QRM Watcher started. Monitoring $SPOOL_DIR..."
+echo "Press Ctrl+C to stop."
+
+while true; do
+    # Look for .json files in the spool directory
+    files=$(find "$SPOOL_DIR" -maxdepth 1 -name "*.json" -type f)
+    
+    if [ -n "$files" ]; then
+        for file in $files; do
+            echo "------------------------------------------"
+            echo "Processing: $file"
+            node main.js "$file"
+            
+            if [ $? -eq 0 ]; then
+                echo "Success! Removing request file."
+                rm "$file"
+            else
+                echo "Error processing $file. Keeping it for inspection."
+                mv "$file" "${file}.error"
+            fi
+            echo "------------------------------------------"
+        done
+    fi
+    
+    sleep 1
+done
