@@ -2,52 +2,23 @@
   "name": "Afterglowish",
   "outputDir": "/Users/bert.olsson/Desktop/ag",
   "tempo": 60,
-  "velocity": [
-    60,
-    80
-  ],
-  "key": {
-    "tonic": "G",
-    "mode": "major"
-  },
-  "meter": {
-    "numerator": 4,
-    "denominator": 4
-  },
+  "velocity": [ 60, 80 ],
+  "key": { "tonic": "G", "mode": "major" },
+  "meter": { "numerator": 4, "denominator": 4 },
   "timeline": [
     {
       "name": "intro",
       "nMeasures": 1,
-      "chords": [
-        "G",
-        "Gmaj7",
-        "G",
-        "Gmaj7",
-        "G",
-        "C",
-        "A"
-      ],
-      "key": {
-        "tonic": "G",
-        "mode": "major"
-      },
-      "meter": {
-        "numerator": 4,
-        "denominator": 4
-      },
+      "chords": [ "G", "Gmaj7", "G", "Gmaj7", "G", "C", "A" ],
+      "key": { "tonic": "G", "mode": "major" },
+      "meter": { "numerator": 4, "denominator": 4 },
       "performers": [
         {
           "name": "Bass",
           "type": "chordal",
           "duration": "1/2",
-          "range": [
-            "E1",
-            "E3"
-          ],
-          "velocity": [
-            70,
-            80
-          ],
+          "range": [ "E1", "E3" ],
+          "velocity": [ 70, 80 ],
           "restPct": 0,
           "tonicPct": 0.75,
           "file": "afglo-bass-1.mid"
@@ -56,14 +27,8 @@
           "name": "Chords",
           "type": "chords",
           "duration": "1/2",
-          "range": [
-            "C3",
-            "C5"
-          ],
-          "velocity": [
-            60,
-            75
-          ],
+          "range": [ "C3", "C5" ],
+          "velocity": [ 60, 75 ],
           "restPct": 0,
           "inversionPct": 0.25,
           "file": "afglo-chords-1.mid"
@@ -72,38 +37,17 @@
     },
     {
       "name": "outro",
-      "key": {
-        "tonic": "D",
-        "mode": "major"
-      },
+      "key": { "tonic": "D", "mode": "major" },
       "nMeasures": 32,
-      "chords": [
-        "D",
-        "Dmaj7",
-        "G",
-        "Gm",
-        "D",
-        "Dmaj7",
-        "G",
-        "A"
-      ],
-      "meter": {
-        "numerator": 4,
-        "denominator": 4
-      },
+      "chords": [ "D", "Dmaj7", "G", "Gm", "D", "Dmaj7", "G", "A" ],
+      "meter": { "numerator": 4, "denominator": 4 },
       "performers": [
         {
           "name": "Bass",
           "type": "chordal",
           "duration": "1/2",
-          "range": [
-            "E1",
-            "E3"
-          ],
-          "velocity": [
-            70,
-            80
-          ],
+          "range": [ "E1", "E3" ],
+          "velocity": [ 70, 80 ],
           "restPct": 0,
           "tonicPct": 0.75,
           "file": "afglo-bass-2.mid"
@@ -112,14 +56,8 @@
           "name": "Chords",
           "type": "chords",
           "duration": "1/2",
-          "range": [
-            "C3",
-            "C5"
-          ],
-          "velocity": [
-            60,
-            75
-          ],
+          "range": [ "C3", "C5" ],
+          "velocity": [ 60, 75 ],
           "restPct": 0,
           "inversionPct": 0.5,
           "file": "afglo-chords-2.mid"
