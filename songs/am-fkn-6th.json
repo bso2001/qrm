@@ -1,21 +1,22 @@
 {
   "name"      : "Freakin' Flat 6th",
   "outputDir" : "/Users/bert.olsson/Desktop",
-  "key" : { "tonic" : "A", "mode" : "minor" },
-  "meter" : { "numerator" : 4, "denominator" : 4 },
-  "nMeasures" : 32,
-  "tempo" : 100,
-  "loglevel" : 3,
+  "tempo"     : 100,
+  "loglevel"  : 3,
 
   "parts" : [{
-    "file" : "flat6-bass.mid",
-    "type" : "chordal",
-    "chords" : [ "Am", "Am", "G", "F" ],
-	"voices" : [{
-      "range" : [ "E1", "E3" ],
-      "velocity" : [ 70, 80 ],
-	  "duration" : [ "1/8c", "1/4b", "1/2a" ],
-      "restPct" : [ 0.0, 0.3, 0.4, 0.5 ],
+    "key"       : { "tonic" : "A", "mode" : "minor" },
+    "meter"     : { "numerator" : 4, "denominator" : 4 },
+    "nMeasures" : 32,
+    "chords"    : [ "Am", "Am", "G", "F" ],
+    "velocity"  : [ 70, 80 ],
+    "duration"  : [ "1/8c", "1/4b", "1/2a" ],
+
+    "voices" : [{
+      "file"     : "flat6-bass.mid",
+      "type"     : "chordal",
+      "range"    : [ "E1", "E3" ],
+      "restPct"  : [ 0.0, 0.3, 0.4, 0.5 ],
       "tonicPct" : [ 0.99, 0.4, 0.4, 0.1 ]
     }]
   }]

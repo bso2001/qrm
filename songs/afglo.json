@@ -1,13 +1,13 @@
 {
   "name"      : "Afterglowish",
   "outputDir" : "/Users/bert.olsson/Desktop/ag",
-  "tempo"     : 60,
   "loglevel"  : 0,
+  "tempo"     : 60,
+  "meter"     : { "numerator" : 4, "denominator" : 4 },
 
   "parts" : [{
       "name"      : "intro",
       "key"       : { "tonic" : "G", "mode" : "major" },
-      "meter"     : { "numerator" : 4, "denominator" : 4 },
       "nMeasures" : 1,
       "chords"    : [ "G", "Gmaj7", "G", "Gmaj7", "G", "C", "A" ],
       "velocity"  : [ 70, 80 ],

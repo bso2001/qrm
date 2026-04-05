@@ -1,19 +1,23 @@
 {
+  "name"      : "em-bass",
   "outputDir" : "/Users/bert.olsson/Desktop",
-  "key" : { "tonic" : "E", "mode" : "minor" },
-  "meter" : { "numerator" : 4, "denominator" : 4 },
-  "nMeasures" : 40,
-  "tempo" : 15,
-  "loglevel" : 0,
+  "tempo"     : 15,
+  "loglevel"  : 0,
 
   "parts" : [{
-    "file" : "em-bass.mid",
-    "type" : "freeform",
-    "range" : [ "E1", "E3" ],
-    "velocity" : [ 80, 90 ],
-    "duration" : [ "1/8d", "1/4c", "1/2b" ],
+    "name"      : "intro",
+    "key"       : { "tonic" : "E", "mode" : "minor" },
+    "meter"     : { "numerator" : 4, "denominator" : 4 },
+    "nMeasures" : 40,
+    "velocity"  : [ 80, 90 ],
+    "duration"  : [ "1/8d", "1/4c", "1/2b" ],
 
-    "restPct" : [ 0.00, 0.10, 0.00, 0.20 ],
-    "tonicPct" : 0.25
+    "voices" : [{
+      "file"     : "em-bass.mid",
+      "type"     : "freeform",
+      "range"    : [ "E1", "E3" ],
+      "restPct"  : [ 0.00, 0.10, 0.00, 0.20 ],
+      "tonicPct" : 0.25
+    }]
   }]
 }
