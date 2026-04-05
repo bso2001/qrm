@@ -11,29 +11,67 @@ const theory = require("./theory")
 
 if ( require.main === module )
 {
-	const inputFile = process.argv[2]
+        const inputFile = process.argv[2]
 
-	if ( !inputFile )
-	{
-		console.error( "Usage: node main.js input.json" )
-		process.exit(1)
-	}
+        if ( !inputFile )
+        {
+                console.error( "Usage: node main.js input.json" )
+                process.exit(1)
+        }
 
-	common.song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ))
-	common.song.keyRoot = common.song.key ? theory.keyToSemitone( common.song.key.tonic ) : 0
+        const song = JSON.parse( fsys.readFileSync( inputFile, "utf8" ) )
+        song.keyRoot = song.key ? theory.keyToSemitone( song.key.tonic ) : 0
 
-	if ( !common.song.ppqn || common.song.ppqn === "undefined" )
-		common.song.ppqn = 480
+        if ( !song.ppqn || song.ppqn === "undefined" )
+                song.ppqn = 480
 
-	for ( p of common.song.parts )
-	{
-		const pEvents = part.generate( p )
+        for ( const section of song.sections )
+        {
+                if ( !section.instruments ) continue;
+                for ( const inst of section.instruments )
+                {
+                        const pEvents = part.generate( song, section, inst, 0 )
 
-		if ( ! pEvents || pEvents.length === 0 )
-			console.error( "Error: no events generated for", p )
-		else
-			midi.writeEvents( pEvents, common.song.ppqn, 
-					(common.song.outputDir ? song.outputDir : '.') + '/' + p.file )
-	}
+                        if ( ! pEvents || pEvents.length === 0 ) {
+                                console.error( "Error: no events generated for", inst.name )
+                        } else {
+                                pEvents.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
+
+                                let evts  = []
+                                let ptime = 0
+
+                                evts.push(
+                                {
+                                        delta: 0,
+                                        type: "meta",
+                                        meta_type: "tempo",
+                                        tempo: Math.round( 60000000 / song.tempo )
+                                })
+
+                                evts.push(
+                                {
+                                        delta: 0,
+                                        type: "meta",
+                                        meta_type: "time_signature",
+                                        numerator: song.meter.numerator,
+                                        denominator: song.meter.denominator,
+                                        metronome: 24,
+                                        thirtyseconds: 8
+                                })
+
+                                for ( const e of pEvents )
+                                {
+                                        const dlta = e.time - ptime
+                                        ptime = e.time
+
+                                        evts.push({ delta: dlta, type: e.type, channel: e.channel, note: e.note, velocity: e.velocity })
+                                }
+
+                                evts.push({ delta: 0, type: "meta", meta_type: "end_of_track" })
+
+                                midi.writeEvents( evts, song.ppqn, 
+                                                (song.outputDir ? song.outputDir : ".") + "/" + inst.file )
+                        }
+                }
+        }
 }
-

@@ -11,10 +11,6 @@ const inspectOptions =
 	maxArrayLength : null
 }
 
-let song  = {}		// the current states of everything
-let part  = {}
-let voice = {}
-
 function isAlpha( ch )
 {
 	return /^[A-Z]$/i.test( ch )
@@ -67,7 +63,7 @@ function randomInRange( [lo, hi] )
 
 module.exports =
 {
-	PAD4, PAD8, inspectOptions, part, voice, isAlpha, noteOff, noteOn,
+	PAD4, PAD8, inspectOptions, isAlpha, noteOff, noteOn,
 	parseValue, probabilityHit, randomChoice, randomInRange
 }
 

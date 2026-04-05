@@ -8,100 +8,58 @@ const common = require("./common")
 const theory = require("./theory")
 const util   = require("node:util")
 
-function generate( pJson )
+function generate( song, section, inst, startTick )
 {
-	common.part = pJson
+        const part = {
+                ...inst,
+                events     : [],
+                lastTick   : 0,
+                thisTick   : startTick || 0,
+                chordIndex : 0,
+                prevRest   : false,
+                intrvls    : theory.findIntervals( song, section ),
+                timings    : theory.parseDuration( inst.duration ),
+                minMidi    : theory.parseNoteName( inst.range[0] ),
+                maxMidi    : theory.parseNoteName( inst.range[1] ),
+                chords     : section.chords || song.chords,
+                keyRoot    : song.keyRoot
+        }
 
-	common.part.events     = []
-	common.part.lastTick   = 0
-	common.part.thisTick   = 0
-	common.part.chordIndex = 0
-	common.part.prevRest   = false
+        if ( song.loglevel >= 1 )
+        {
+                console.log( "----------------------------------------------------------------------" )
+                console.log( "song spec =", util.inspect( song, common.inspectOptions ))
+                console.log( "part spec =", util.inspect( part, common.inspectOptions ))
+        }
 
-	common.part.intrvls    = theory.findIntervals( song, pJson )
-	common.part.timings    = theory.parseDuration( pJson.duration )
-	common.part.minMidi    = theory.parseNoteName( pJson.range[0] )
-	common.part.maxMidi    = theory.parseNoteName( pJson.range[1] )
+        for ( let m = 0; m < section.nMeasures; m++ )
+        {
+                part.thisBeat = 0
+                part.measure  = m
+                part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
 
-	if ( common.song.loglevel >= 1 )
-	{
-		console.log( '----------------------------------------------------------------------' )
-		console.log( 'common.song spec =', util.inspect( common.song, common.inspectOptions ))
-		console.log( 'common.part spec =', util.inspect( common.part, common.inspectOptions ))
-	}
+                if ( song.loglevel >= 3 )
+                {
+                        console.log( "----------------------------------------------------------------------" )
+                        console.log( "We are on measure #", part.measure, "; lastTick =" , part.lastTick )
+                }
 
-	for ( m = 0; m < song.nMeasures; m++ )
-	{
-		common.voice = {}
+                for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )
+                {
+                        if ( song.loglevel >= 3 )
+                                console.log( common.PAD4, "Beat", part.thisBeat, "lastTick", part.lastTick )
 
-		common.part.thisBeat = 0
-		common.part.measure  = m
-		common.part.lastTick = part.thisTick + (song.meter.numerator * song.ppqn)
+                        while ( part.thisTick < part.lastTick )
+                        {
+                                if ( song.loglevel >= 3 )
+                                        console.log( common.PAD4, "thisTick =", part.thisTick, "lastTick =", part.lastTick )
+                                evt.generate( song, part )
+                        }
+                }
+        }
 
-		common.part.chords = common.song.chords	// for now...
-
-		if ( song.loglevel >= 3 )
-		{
-			console.log( '----------------------------------------------------------------------' )
-			console.log( 'We are on measure #', common.part.measure, '; lastTick =' , common.part.lastTick )
-		}
-
-		for ( part.thisBeat = 0; part.thisBeat < song.meter.numerator; part.thisBeat++ )
-		{
-			if ( song.loglevel >= 3 )
-				console.log( common.PAD4, 'Beat', part.thisBeat, 'lastTick', part.lastTick )
-
-			while ( part.thisTick < part.lastTick )
-			{
-				if ( song.loglevel >= 3 )
-					console.log( common.PAD4, 'thisTick =', part.thisTick, 'lastTick =', part.lastTick )
-				evt.generate( song, part )
-			}
-		}
-	}
-
-	part.events.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
-
-	let evts  = []
-	let ptime = 0
-
-	evts.push(
-	{
-		delta: 0,
-		type: "meta",
-		meta_type: "tempo",
-		tempo: Math.round( 60000000 / song.tempo )
-	})
-
-	evts.push(
-	{
-		delta: 0,
-		type: "meta",
-		meta_type: "time_signature",
-		numerator: song.meter.numerator,
-		denominator: song.meter.denominator,
-		metronome: 24,
-		thirtyseconds: 8
-	})
-
-	for ( const e of part.events )
-	{
-		const dlta = e.time - ptime
-		ptime = e.time
-
-		evts.push({ delta: dlta, type: e.type, channel: e.channel, note: e.note, velocity: e.velocity })
-	}
-
-	evts.push({ delta: 0, type: "meta", meta_type: "end_of_track" })
-
-	if ( song.loglevel >= 1 )
-	{
-		console.log( '-------------------------------------------------------------------------------------' )
-		console.log( 'events =', util.inspect( evts, false, null, true ))
-	}
-
-	return evts
+        part.events.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
+        return part.events;
 }
 
 module.exports = { generate }
-

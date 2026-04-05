@@ -8,8 +8,8 @@
   "parts" : [{
       "name"      : "intro",
       "key"       : { "tonic" : "G", "mode" : "major" },
-      "nMeasures" : 1,
-      "chords"    : [ "G", "Gmaj7", "G", "Gmaj7", "G", "C", "A" ],
+      "nMeasures" : 2,
+      "chords"    : [ "G", "Gmaj7", "C", "A" ],
       "velocity"  : [ 70, 80 ],
       "duration"  : "1/2",
 
