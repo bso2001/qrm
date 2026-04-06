@@ -8,19 +8,19 @@ const common = require("./common")
 const theory = require("./theory")
 const util   = require("node:util")
 
-function generate( song, section, inst, startTick )
+function generate( song, section, p, startTick )
 {
         const part = {
-                ...inst,
+                ...p,
                 events     : [],
                 lastTick   : 0,
                 thisTick   : startTick || 0,
                 chordIndex : 0,
                 prevRest   : false,
                 intrvls    : theory.findIntervals( song, section ),
-                timings    : theory.parseDuration( inst.duration ),
-                minMidi    : theory.parseNoteName( inst.range[0] ),
-                maxMidi    : theory.parseNoteName( inst.range[1] ),
+                timings    : theory.parseDuration( p.duration ),
+                minMidi    : theory.parseNoteName( p.range[0] ),
+                maxMidi    : theory.parseNoteName( p.range[1] ),
                 chords     : section.chords || song.chords,
                 keyRoot    : song.keyRoot
         }

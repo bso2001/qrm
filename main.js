@@ -27,13 +27,13 @@ if ( require.main === module )
 
         for ( const section of song.sections )
         {
-                if ( !section.instruments ) continue;
-                for ( const inst of section.instruments )
+                if ( !section.parts ) continue;
+                for ( const p of section.parts )
                 {
-                        const pEvents = part.generate( song, section, inst, 0 )
+                        const pEvents = part.generate( song, section, p, 0 )
 
                         if ( ! pEvents || pEvents.length === 0 ) {
-                                console.error( "Error: no events generated for", inst.name )
+                                console.error( "Error: no events generated for", p.name )
                         } else {
                                 pEvents.sort( (a, b) => a.time - b.time || (a.type === "note_off" ? -1 : 1) )
 
@@ -70,7 +70,7 @@ if ( require.main === module )
                                 evts.push({ delta: 0, type: "meta", meta_type: "end_of_track" })
 
                                 midi.writeEvents( evts, song.ppqn, 
-                                                (song.outputDir ? song.outputDir : ".") + "/" + inst.file )
+                                                (song.outputDir ? song.outputDir : ".") + "/" + p.file )
                         }
                 }
         }
