@@ -1,0 +1,25 @@
+{
+  "name": "qrm",
+  "version": "1.0.0",
+  "description": "This started as a AI generated project (GPT-5-something). We were able to quickly get an app skeleton built, as well as an \"apparently working\" first version. As AI was requested to add features, things broke.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bso2001/qrm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bso2001/qrm/issues"
+  },
+  "homepage": "https://github.com/bso2001/qrm#readme",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "express": "^5.2.1"
+  }
+}
