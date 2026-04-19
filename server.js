@@ -58,5 +58,5 @@ app.post('/generate', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`QRM API Microservice running on http://localhost:${port}`);
+    console.log(`QRM API running on http://localhost:${port}`);
 });
